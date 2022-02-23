@@ -1,0 +1,298 @@
+
+
+\documentclass[12pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage[14pt]{extsizes}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{amsmath,amsfonts,amssymb,amsthm,mathtools} 
+\usepackage{pgfplots}
+\usepackage{filecontents}
+\usepackage{float}
+\usepackage{indentfirst}
+\usepackage{eucal}
+\usepackage{enumitem}
+%s\documentclass[openany]{book}
+\frenchspacing
+
+\usepackage{titlesec}
+\titleformat{\section}
+{\normalsize\bfseries}
+{\thesection}
+{1em}{}
+\titlespacing*{\chapter}{0pt}{-30pt}{8pt}
+\titlespacing*{\section}{\parindent}{*4}{*4}
+\titlespacing*{\subsection}{\parindent}{*4}{*4}
+
+\usepackage{indentfirst} % Красная строка
+
+\usetikzlibrary{datavisualization}
+\usetikzlibrary{datavisualization.formats.functions}
+
+\usepackage{amsmath}
+
+
+% Для листинга кода:
+\lstset{ %
+	language=c,                 % выбор языка для подсветки (здесь это С)
+	basicstyle=\small\sffamily, % размер и начертание шрифта для подсветки кода
+	numbers=left,               % где поставить нумерацию строк (слева\справа)
+	numberstyle=\tiny,           % размер шрифта для номеров строк
+	stepnumber=1,                   % размер шага между двумя номерами строк
+	numbersep=5pt,                % как далеко отстоят номера строк от подсвечиваемого кода
+	showspaces=false,            % показывать или нет пробелы специальными отступами
+	showstringspaces=false,      % показывать или нет пробелы в строках
+	showtabs=false,             % показывать или нет табуляцию в строках
+	frame=single,              % рисовать рамку вокруг кода
+	tabsize=2,                 % размер табуляции по умолчанию равен 2 пробелам
+	captionpos=t,              % позиция заголовка вверху [t] или внизу [b] 
+	breaklines=true,           % автоматически переносить строки (да\нет)
+	breakatwhitespace=false, % переносить строки только если есть пробел
+	escapeinside={\#*}{*)}   % если нужно добавить комментарии в коде
+}
+
+
+\usepackage[left=2cm,right=2cm, top=2cm,bottom=2cm,bindingoffset=0cm]{geometry}
+% Для измененных титулов глав:
+\usepackage{titlesec, blindtext, color} % подключаем нужные пакеты
+\definecolor{gray75}{gray}{0.75} % определяем цвет
+\newcommand{\hsp}{\hspace{20pt}} % длина линии в 20pt
+% titleformat определяет стиль
+\titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hsp\textcolor{gray75}{|}\hsp}{0pt}{\Huge\bfseries}
+
+
+% plot
+\usepackage{pgfplots}
+\usepackage{filecontents}
+\usetikzlibrary{datavisualization}
+\usetikzlibrary{datavisualization.formats.functions}
+
+\begin{document}
+	%\def\chaptername{} % убирает "Глава"
+	\thispagestyle{empty}
+	\begin{titlepage}
+		\noindent \begin{minipage}{0.15\textwidth}
+			\includegraphics[width=\linewidth]{img/b_logo}
+		\end{minipage}
+		\noindent\begin{minipage}{0.9\textwidth}\centering
+			\textbf{Министерство науки и высшего образования Российской Федерации}\\
+			\textbf{Федеральное государственное бюджетное образовательное учреждение высшего образования}\\
+			\textbf{~~~«Московский государственный технический университет имени Н.Э.~Баумана}\\
+			\textbf{(национальный исследовательский университет)»}\\
+			\textbf{(МГТУ им. Н.Э.~Баумана)}
+		\end{minipage}
+		
+		\noindent\rule{18cm}{3pt}
+		\newline\newline
+		\noindent ФАКУЛЬТЕТ $\underline{\text{«Информатика и системы управления»}}$ \newline\newline
+		\noindent КАФЕДРА $\underline{\text{«Программное обеспечение ЭВМ и информационные технологии»}}$\newline\newline\newline
+		
+		\begin{center}
+			\noindent\begin{minipage}{1.1\textwidth}\centering
+				\Large\textbf{  Отчет по лабораторной работе №1}\newline
+				\textbf{по дисциплине <<Моделирование>>}\newline
+			\end{minipage}
+		\end{center}
+		
+		\noindent\textbf{Тема} $\underline{\text{Программная реализация приближенного аналитического метода и}}$\newline   
+		$\underline{\text{		численных алгоритмов первого и второго порядков точности при}}$\newline
+		$\underline{\text{решении задачи Коши для ОДУ}}$\newline\newline
+		\noindent\textbf{Студент} $\underline{\text{Зайцева А. А.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}}$\newline\newline
+		\noindent\textbf{Группа} $\underline{\text{ИУ7-62Б~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}}$\newline\newline
+		\noindent\textbf{Оценка (баллы)} $\underline{\text{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}}$\newline\newline
+		\noindent\textbf{Преподаватель} $\underline{\text{Градов В. М.~~~~~~~~~~~~~~~~~~~~~~~~~~~~}}$\newline\newline\newline
+		
+		\begin{center}
+			\vfill
+			Москва~---~\the\year
+			~г.
+		\end{center}
+	\end{titlepage}
+
+\chapter{Задание}
+
+\textbf{Цель работы.} 
+
+Получение навыков решения задачи Коши для ОДУ методами Пикара и явными методами первого порядка точности (Эйлера) и второго порядка точности (Рунге-Кутты).
+
+\textbf{Исходные данные.} 
+
+ОДУ \ref{eq:task1}, не имеющее аналитического решения:
+
+\begin{equation}
+	{\begin{cases}
+			u'(x) = u^2 + x^2 \\
+			u(0) = 0.
+	\end{cases}}
+	\label{eq:task1}
+\end{equation}
+
+\textbf{Результат работы программы.}
+
+1. Таблица, содержащая значения аргумента с заданным шагом в интервале [0, xmax] и результаты расчета функции u(x) в приближениях Пикара (от 1-го до 4-го), а также численными методами. Границу интервала xmax выбирать максимально возможной из условия, чтобы численные методы обеспечивали точность вычисления решения уравнения u(x) до второго знака после запятой.
+
+\chapter{Теоретическая часть}
+
+Обыкновенное дифференциальное уравнение (ОДУ) n-ого порядка имеет вид \ref{eq:ody}:
+
+\begin{equation}
+	F(x, u', u'', ... , u^{(n)} = 0)
+	\label{eq:ody}.
+\end{equation}
+
+Задача Коши состоит в нахождении решения дифференциального уравнения, удовлетворяющего начальным условиям \ref{eq:ref1}:
+
+
+\begin{equation}
+	{\begin{cases}
+			u'(x) = f(x,u) \\
+			u(\xi) = \eta
+	\end{cases}}
+	\label{eq:ref1}
+\end{equation}
+
+Рассмотрим методы решения этой задачи.
+
+%Методы решения ОДУ в задачи Коши:
+
+%\begin{enumerate}
+%	\item аналитические;
+%	\item приближенно аналитические;
+%	\item численные.
+%\end{enumerate}
+
+\section{Метод Пикара}
+
+Метод Пикара является приближенно-аналитическим. Идея состоит в том, чтобы заменить дифференциальное уравнение интегральным \ref{eq:ref2}:.
+
+
+\begin{equation}
+	y^{s}(x) = \eta + \int_{\xi}^{x} f(t, y^{s-1}(t)) dt
+	\label{eq:ref2}
+\end{equation}
+
+\begin{equation}
+	y^{(0)} = \eta
+\end{equation}
+
+Метод сходится если правая часть непрерывна и выполнено условие Липшица: $|f(x, u_1) - f(x, u_2)| \leq L |u_1-u_2|$, где L - константа Липшица. 
+
+Для данного в задании ОДУ \ref{eq:task1}:
+
+\begin{equation}
+	y^{(1)} = 0 + \int_{0}^{x} t^2 dt= \frac{x^3}{3} 
+\end{equation}
+
+\begin{equation}
+	y^{(2)} = 0 + \int_{0}^{x}\left[ \left( t^2 + \frac{t^3}{3} \right)^2 \right] dt = \frac{x^3}{3} + \frac{x^7}{63}
+\end{equation}
+
+\begin{equation}
+	\begin{split}
+		y^{(3)} = 0 + \int_{0}^{x}\left[t^2 + \left(\frac{t^7}{63} + \frac{t^3}{3} \right)^2\right] dt = \\ 
+		\frac{x^3}{3} + \frac{x^7}{63} + \frac{2x^{11}}{2079} + \frac{x^{15}}{59535}
+	\end{split}
+\end{equation}
+
+\begin{equation}
+	\begin{split}
+		y^{(4)} = 0 + \int_{0}^{x}\left[t^2 + \left( \frac{t^3}{3} + \frac{t^7}{63} + \frac{2t^{11}}{2079} + \frac{t^{15}}{59535} \right)^2 \right] dt = \\ 
+		= \frac{x^3}{3} + \frac{x^{7}}{63} + \frac{2x^{11}}{2079} + \frac{13x^{15}}{218295} + \frac{82x^{19}}{37328445} + \\
+		+ \frac{662x^{23}}{10438212015} + \frac{4x^{27}}{3341878155} + \frac{x^{31}}{109876903905}
+	\end{split}
+\end{equation}
+
+\section{Метод Эйлера}
+Метод Эйлера -- это явный метод первого порядка точности, использующий формулу \ref{eq:ref3}:
+
+\begin{equation}
+	y_{n+1} = y_n + h*f(x_n, y_n).
+	\label{eq:ref3}
+\end{equation}
+
+
+\section{Метод Рунге-Кутты}
+
+Метод Ругнге-Кутты -- это явный метод второго порядка точности, использующий формулу \ref{eq:ref4}:
+
+\begin{equation}
+	y_{n+1} = y_n + h*[\frac{k_1}{2} + \frac{k_2}{2}],
+	\label{eq:ref4}
+\end{equation}
+где $k_1 = f(x_n, y_n)$, $k_2 = f(x_n + h, y_n + hk_1)$.
+
+%\begin{equation}
+%	y_{n+1} = y_n + h*[(1-\alpha)k_1 + \alpha * k_2],
+%	\label{eq:ref4}
+%\end{equation}
+%где $k_1 = f(x_n, y_n)$, $k_2 = f(x_n + \frac{h}{2\alpha}, y_n + \frac{h}{2\alpha}k_1)$, $\alpha$ = 1 или $\frac{1}{2}$
+ 
+ исправить
+
+
+
+Используя описанные выше методы построить таблицу для:
+
+\begin{enumerate}
+	\item метода Пикара:
+	\begin{enumerate}
+		\item Первое приближение;
+		\item Второе приближение;
+		\item третье приближение;
+		\item четверное приближение.
+	\end{enumerate}
+	\item метод Эйлера;
+	\item метод Рунге-Кутты.
+\end{enumerate}
+
+
+
+
+\chapter{Листинги реализованных методов}
+
+\begin{lstlisting}[language=Python]
+\end{lstlisting}
+
+
+\chapter{Ответы на вопросы}
+
+% 1. Укажите интервалы значений аргумента, в которых можно считать решением заданного
+% уравнения каждое из первых 4-х приближений Пикара. Точность результата оценивать до
+% второй цифры после запятой. Объяснить свой ответ.
+
+1. Для того, чтобы указать интервал значений аргумента, 
+в которых можно считать решением заданного
+уравнения каждое из первых 4-х приближений проанализируем
+полученные значения.
+Так как нам дано начальное приближение, то левой границей будет 0.
+Для определения правой границы границы мы будем анализировать полученные
+решения методом Пикара для конкретного приближения и сравнивать со значениями 
+более высоких порядков приближения и с результатами численных методов при 
+определенном шаге. В листинге был подобран шаг 1e-4.
+Для первого приближения искомым интервалом будет [0, 0.89], 
+для второго [0, 1.12], для третьего  [0, 1.39], для четвертого [0, 1.4]
+
+% При данном шаге будут анализироваться значения.
+% будем постепенно уменьшать шаг и сравнивать результаты для разных приближений.
+
+2. В численных методах правильность полученного результата, при 
+фиксированном значении аргумента, доказывается путем уменьшения шага.
+Правильно полученный результат - это когда при уменьшение 
+шага значение аргумента незначительно (или вообще) не меняется.
+
+3. Примерное значение функции при x = 2.
+
+
+\begin{equation}
+	u(2) \approx 316.713
+	\label{eq:ref4}ё
+\end{equation}
+
+
+	\bibliographystyle{utf8gost705u}  % стилевой файл для оформления по ГОСТу
+	
+	\bibliography{51-biblio}          % имя библиографической базы (bib-файла)
+	
+	
+\end{document}
