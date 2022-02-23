@@ -3,7 +3,7 @@
 
 
 https://github.com/Winterpuma/bmstu_MG/tree/master
-(5, теория, лекции, экз)
+(5, теория, лекции, экз) -- python
 
 https://github.com/NastyRu/Modeling/tree/master/semestr1
 (5)
@@ -13,22 +13,22 @@ https://github.com/Justarone/bmstu-modeling
 (1-3)
 
 https://github.com/qwertyKira00/sem6/tree/master/modeling
-(4 + лекции)
+(4 + лекции) -cpp
 
 https://github.com/TheSawIsTheLaw/Modeling
 (1, 2, 4)
 
 https://github.com/wcdbmv/M
-(5+ еще что-то)
+(5+ еще что-то) -cpp
 
 https://github.com/hackfeed/modeling-6th-sem-labs
 (4)
 
 https://github.com/bmstu-ics7/modeling
-(5)
+(5) -- старался
 
 https://github.com/Sunshine-ki/BMSTU6_Modeling
-(4, лекции)
+(4, лекции) -- python
 
 https://github.com/ZeynalovZ/modeling
 (4)
