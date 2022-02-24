@@ -1,5 +1,6 @@
 from prettytable import PrettyTable
-
+import pandas as pd
+import matplotlib.pyplot as plt
 EPS = 1e-6
 
 
@@ -81,6 +82,15 @@ def fd4(x):
             82 * pow(x, 19) / 37328445 + 662 * pow(x, 23) / 10438212015 +
             4 * pow(x, 27) / 3341878155 + pow(x, 31) / 109876903905)
 
+def draw_plots(table):
+    plt.figure(figsize=(30, 10))
+    x = table.index
+    for column_name in table.columns:
+        y = table[column_name]
+        plt.plot(x, y, label=column_name)
+
+    plt.legend()
+    plt.show()
 
 def main():
     x_start = 0
@@ -90,14 +100,29 @@ def main():
 
     solver = UDESolver(x_start, y_start, x_max, step, function, [fd1, fd2, fd3, fd4])
 
-    tb = PrettyTable()
-    tb.add_column("X", solver.x_range())
-    tb.add_column("Euler", solver.solve_euler())
-    tb.add_column("Runge-Kutta", solver.solve_runge_kutta())
-    for i in range(4):
-        tb.add_column(f"Picard, {i}", solver.solve_picar(i))
+    # tb = PrettyTable()
+    # tb.add_column("x", solver.x_range())
+    # tb.add_column("Euler", solver.solve_euler())
+    # tb.add_column("Runge-Kutta", solver.solve_runge_kutta())
+    # for i in range(4):
+    #     tb.add_column(f"Picard, {i + 1}", solver.solve_picar(i + 1))
+    # print(tb)
 
-    print(tb)
+    table = pd.DataFrame(index=solver.x_range())
+    table['x'] = solver.x_range()
+    table = table.set_index('x')
+    table['Euler'] = solver.solve_euler()
+    table['Runge-Kutta'] = solver.solve_runge_kutta()
+    for i in range(4):
+        table[f"Picard, {i + 1}"] = solver.solve_picar(i + 1)
+
+    pd.set_option('display.max_rows', None)
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.max_colwidth', None)
+    print(table)
+
+    draw_plots(table)
+
 
 
 if __name__ == "__main__":
