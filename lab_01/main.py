@@ -6,18 +6,27 @@ EPS = 1e-6
 
 class UDESolver:
     def __init__(self, x_start, y_start, x_max, step, f, f_derivatives):
+        if (x_start < x_max) != (step > 0):
+            raise ValueError('Ошибка в шаге')
+
         self.x_start = x_start
         self.y_start = y_start
         self.x_max = x_max
         self.step = step
         self.f = f
         self.f_derivatives = f_derivatives
+        self.cmp_func = lambda x1, x2: x1 < x2 + EPS
+
+    def reverse_move(self):
+        self.step *= -1
+        self.x_max *= -1
+        self.cmp_func = lambda x1, x2: x1 > x2 - EPS
 
     def x_range(self):
         result = []
         x = self.x_start
-        while x < self.x_max + EPS:
-            result.append(round(x, 2))
+        while self.cmp_func(x, self.x_max):
+            result.append(x)
             x += self.step
         return result
 
@@ -25,7 +34,7 @@ class UDESolver:
         result = []
         x, y = self.x_start, self.y_start
 
-        while x < self.x_max + EPS:
+        while self.cmp_func(x, self.x_max):
             result.append(y)
 
             y = y + self.step * self.f(x, y)
@@ -34,15 +43,16 @@ class UDESolver:
         return result
 
     def solve_runge_kutta(self):
+        a = 0.5
         result = []
         x, y = self.x_start, self.y_start
 
-        while x < self.x_max + EPS:
+        while self.cmp_func(x, self.x_max):
             result.append(y)
 
             k1 = self.f(x, y)
-            k2 = self.f(x + self.step, y + self.step * k1)
-            y = y + self.step * (k1 + k2) / 2
+            k2 = self.f(x + self.step / (2 * a), y + self.step * k1 / (2 * a))
+            y += self.step * ((1 - a) * k1 + a * k2)
             x += self.step
 
         return result
@@ -53,7 +63,7 @@ class UDESolver:
         result = []
         x, y = self.x_start, self.y_start
 
-        while x < self.x_max + EPS:
+        while self.cmp_func(x, self.x_max):
             result.append(y)
             x += self.step
             y = func(x)
@@ -96,17 +106,14 @@ def main():
     x_start = 0
     y_start = 0
     x_max = 1
-    step = 1e-4
+    step_accuracy = 2
+    step = float(f'1e-{step_accuracy}')
+    pd.set_option('display.max_rows', None)
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.max_colwidth', None)
+    pd.set_option('display.float_format', lambda x: f'%.{step_accuracy}f' % x)
 
     solver = UDESolver(x_start, y_start, x_max, step, function, [fd1, fd2, fd3, fd4])
-
-    # tb = PrettyTable()
-    # tb.add_column("x", solver.x_range())
-    # tb.add_column("Euler", solver.solve_euler())
-    # tb.add_column("Runge-Kutta", solver.solve_runge_kutta())
-    # for i in range(4):
-    #     tb.add_column(f"Picard, {i + 1}", solver.solve_picar(i + 1))
-    # print(tb)
 
     table = pd.DataFrame(index=solver.x_range())
     table['x'] = solver.x_range()
@@ -116,79 +123,34 @@ def main():
     for i in range(4):
         table[f"Picard, {i + 1}"] = solver.solve_picar(i + 1)
 
-    pd.set_option('display.max_rows', None)
-    pd.set_option('display.max_columns', None)
-    pd.set_option('display.max_colwidth', None)
-    print(table)
 
-    draw_plots(table)
+    # print(table)
+    # draw_plots(table)
+
+
+    solver.reverse_move()
+
+    table2 = pd.DataFrame(index=solver.x_range())
+    table2['x'] = solver.x_range()
+    table2 = table2.set_index('x')
+    table2['Euler'] = solver.solve_euler()
+    table2['Runge-Kutta'] = solver.solve_runge_kutta()
+    for i in range(4):
+        table2[f"Picard, {i + 1}"] = solver.solve_picar(i + 1)
+
+    # print(table2)
+    # draw_plots(table2)
+
+    full_table = pd.concat([table, table2], sort=True, axis=0)
+    full_table = full_table.sort_index(ascending=True)
+
+    print(full_table)
+    # draw_plots(full_table)
 
 
 
 if __name__ == "__main__":
     main()
-
-
-# def Euler(x_max, h):
-#     result = []
-#     x, y = x_start, y_start
-#
-#     while x < x_max + EPS:
-#         result.append(y)
-#
-#         y = y + h * f(x, y)
-#         x += h
-#
-#     return result
-#
-#
-# def RungeKutta(x_max, h):
-#     result = []
-#     x, y = x_start, y_start
-#
-#     while x < x_max:
-#         result.append(y)
-#
-#         k1 = f(x, y)
-#         k2 = f(x + h, y + h * k1)
-#         y = y + h * (k1 + k2) / 2
-#         x += h
-#
-#     return result
-#
-# def Picar(x_max, h, depth):
-#     if depth == 1:
-#         func = fd1
-#     elif depth == 2:
-#         func = fd2
-#     elif depth == 3:
-#         func = fd2
-#     else:
-#         func = fd2
-#
-#     result = []
-#     x, y = x_start, y_start
-#
-#     while x < x_max:
-#         result.append(y)
-#         x += h
-#         y = func(x)
-#
-#     return result
-#
-# def main1():
-#     column_names = ["X", "Picard 1", "Picard 2", "Picard 3", "Picard 4", "Runge"]
-#
-#     tb = PrettyTable()
-#     tb.add_column("X", x_range(MAX_X, STEP))
-#     tb.add_column("Picard 1", Picar(MAX_X, STEP, 1))
-#     tb.add_column("Picard 2", Picar(MAX_X, STEP, 2))
-#     tb.add_column("Picard 3", Picar(MAX_X, STEP, 3))
-#     tb.add_column("Picard 4", Picar(MAX_X, STEP, 4))
-#     tb.add_column("Euler", Euler(MAX_X, STEP))
-#     tb.add_column("Runge", RungeKutta(MAX_X, STEP))
-#
-#     print(tb)
 
 
 # Подбираем шаг:

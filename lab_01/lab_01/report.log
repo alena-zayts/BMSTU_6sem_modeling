@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.9.4)  23 FEB 2022 23:11
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.9.4)  27 FEB 2022 23:23
 entering extended mode
 **./report.tex
 (report.tex
@@ -1137,7 +1137,7 @@ g>]
 File: lstlang1.sty 2020/03/24 1.8d listings language file
 )
 LaTeX Font Info:    Trying to load font information for T2A+cmss on input line 
-254.
+238.
 
 (C:\Users\alena\AppData\Roaming\MiKTeX\tex/latex/cyrillic\t2acmss.fd
 File: t2acmss.fd 2001/08/11 v1.0a Computer Modern Cyrillic font definitions
@@ -1146,7 +1146,7 @@ File: t2acmss.fd 2001/08/11 v1.0a Computer Modern Cyrillic font definitions
 ]
 {\cyrillictext \CYRG \cyrl \cyra \cyrv \cyra } 4.
 
-LaTeX Warning: Command \cyryo invalid in math mode on input line 289.
+LaTeX Warning: Command \cyryo invalid in math mode on input line 273.
 
 Missing character: There is no ¼ in font cmr12!
 (report.bbl) [5
@@ -1157,13 +1157,13 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 29780 strings out of 478864
- 733846 string characters out of 2858518
- 1342671 words of memory out of 10000000
- 47215 multiletter control sequences out of 15000+600000
+ 29778 strings out of 478864
+ 733800 string characters out of 2858518
+ 1341643 words of memory out of 10000000
+ 47213 multiletter control sequences out of 15000+600000
  414435 words of font info for 49 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 99i,18n,103p,730b,1244s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 99i,18n,103p,730b,1242s stack positions out of 5000i,500n,10000p,200000b,80000s
  <C:\Users\alena\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\labx35
 83.pk> <C:\Users\alena\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\la
 bx2074.pk> <C:\Users\alena\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi60
@@ -1174,9 +1174,9 @@ ogram Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Program Files/
 MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX/fonts/
 type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/
 amsfonts/cm/cmsy10.pfb>
-Output written on report.pdf (6 pages, 173503 bytes).
+Output written on report.pdf (6 pages, 171347 bytes).
 PDF statistics:
- 259 PDF objects out of 1000 (max. 8388607)
+ 254 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  18 words of extra memory for PDF output out of 10000 (max. 10000000)
 
