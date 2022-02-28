@@ -1,4 +1,3 @@
-from prettytable import PrettyTable
 import pandas as pd
 import matplotlib.pyplot as plt
 EPS = 1e-6
@@ -103,15 +102,19 @@ def draw_plots(table):
     plt.show()
 
 def main():
+    step_accuracy = 4
+    x_max = 2
+
     x_start = 0
     y_start = 0
-    x_max = 1
-    step_accuracy = 2
+    round_accuracy = 2
     step = float(f'1e-{step_accuracy}')
+    show_each = 1
+
     pd.set_option('display.max_rows', None)
     pd.set_option('display.max_columns', None)
     pd.set_option('display.max_colwidth', None)
-    pd.set_option('display.float_format', lambda x: f'%.{step_accuracy}f' % x)
+    pd.set_option('display.float_format', lambda x: f'%.{round_accuracy}f' % x)
 
     solver = UDESolver(x_start, y_start, x_max, step, function, [fd1, fd2, fd3, fd4])
 
@@ -124,7 +127,7 @@ def main():
         table[f"Picard, {i + 1}"] = solver.solve_picar(i + 1)
 
 
-    # print(table)
+    print(table.iloc[::show_each, :])
     # draw_plots(table)
 
 
@@ -144,7 +147,7 @@ def main():
     full_table = pd.concat([table, table2], sort=True, axis=0)
     full_table = full_table.sort_index(ascending=True)
 
-    print(full_table)
+    # print(full_table)
     # draw_plots(full_table)
 
 
@@ -156,18 +159,17 @@ if __name__ == "__main__":
 # Подбираем шаг:
 
 # Euler:
-# При 1e-1 y(1) = 0.2925421046
-# При 1e-2 y(1) = 0.3331073593
-# При 1e-3 y(1) = 0.3484859823
-# При 1e-4 y(1) = 0.3501691515
-# При 1e-5 y(1) = 0.3502255745
-# Шаг ничего не меняет (между 1e-3 и 1e-4)
-# Значит мы подобрали нужный нам шаг.
+# При 1e-1 y(1) = 0.29
+# При 1e-2 y(1) = 0.34
+# При 1e-3 y(1) = 0.35
+# При 1e-4 y(1) = 0.35
+# При 1e-5 y(1) = 0.35
+# Шаг ничего не меняет между 1e-3 и 1e-4
 
 # Runge:
-# При 1e-1 y(1) = 0.3485453439
-# При 1e-2 y(1) = 0.3391265967
-# При 1e-3 y(1) = 0.3491103993
-# При 1e-4 y(1) = 0.3502318426
-# При 1e-5 y(1) = 0.3502318443
-# Аналогично.
+# При 1e-1 y(1) = 0.35
+# При 1e-2 y(1) = 0.35
+# При 1e-3 y(1) = 0.35
+# При 1e-4 y(1) = 0.35
+# При 1e-5 y(1) = 0.35
+

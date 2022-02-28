@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.9.4)  27 FEB 2022 23:23
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.9.4)  28 FEB 2022 21:36
 entering extended mode
 **./report.tex
 (report.tex
@@ -883,9 +883,6 @@ File: pgflibrarydatavisualization.formats.functions.code.tex 2021/05/15 v3.1.9a
 (C:\Program Files\MiKTeX\tex/latex/listings\lstlang1.sty
 File: lstlang1.sty 2020/03/24 1.8d listings language file
 )
-(C:\Program Files\MiKTeX\tex/latex/listings\lstmisc.sty
-File: lstmisc.sty 2020/03/24 1.8d (Carsten Heinz)
-)
 (C:\Users\alena\AppData\Roaming\MiKTeX\tex/latex/geometry\geometry.sty
 Package: geometry 2020/01/02 v5.9 Page Geometry
 
@@ -944,32 +941,29 @@ LaTeX Font Info:    Trying to load font information for T2A+cmr on input line 5
 
 (C:\Users\alena\AppData\Roaming\MiKTeX\tex/latex/cyrillic\t2acmr.fd
 File: t2acmr.fd 2001/08/11 v1.0a Computer Modern Cyrillic font definitions
-)
-
-LaTeX Warning: Label `eq:ref4' multiply defined.
-
-)
+))
 \openout1 = `report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 71.
-LaTeX Font Info:    ... okay on input line 71.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 71.
-LaTeX Font Info:    ... okay on input line 71.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 71.
-LaTeX Font Info:    ... okay on input line 71.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 71.
-LaTeX Font Info:    ... okay on input line 71.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 71.
-LaTeX Font Info:    ... okay on input line 71.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 71.
-LaTeX Font Info:    ... okay on input line 71.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 71.
-LaTeX Font Info:    ... okay on input line 71.
-LaTeX Font Info:    Checking defaults for T2A/cmr/m/n on input line 71.
-LaTeX Font Info:    ... okay on input line 71.
-LaTeX Info: Redefining \th on input line 71.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for T2A/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Info: Redefining \th on input line 73.
 \c@lstlisting=\count341
- (C:\Program Files\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
+
+(C:\Program Files\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count342
 \scratchdimen=\dimen299
@@ -994,7 +988,7 @@ File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 Package pgfplots Warning: running in backwards compatibility mode (unsuitable t
 ick labels; missing features). Consider writing \pgfplotsset{compat=1.18} into 
 your preamble.
- on input line 71.
+ on input line 73.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -1033,90 +1027,90 @@ your preamble.
 <img/b_logo.jpg, id=4, 57.816pt x 65.3715pt>
 File: img/b_logo.jpg Graphic file (type jpg)
 <use img/b_logo.jpg>
-Package pdftex.def Info: img/b_logo.jpg  used on input line 76.
+Package pdftex.def Info: img/b_logo.jpg  used on input line 78.
 (pdftex.def)             Requested size: 75.06953pt x 84.88416pt.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 77.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 79.
 
 (C:\Program Files\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 77.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 79.
 
 
 (C:\Program Files\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Overfull \hbox (28.06026pt too wide) in paragraph at lines 75--85
+Overfull \hbox (28.06026pt too wide) in paragraph at lines 77--87
 $[]$ $[]$ 
  []
 
 
-Overfull \hbox (11.6656pt too wide) in paragraph at lines 86--90
+Overfull \hbox (11.6656pt too wide) in paragraph at lines 88--92
 [] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 86--90
+Underfull \hbox (badness 10000) in paragraph at lines 88--92
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 86--90
+Underfull \hbox (badness 10000) in paragraph at lines 88--92
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 86--90
+Underfull \hbox (badness 10000) in paragraph at lines 88--92
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 86--90
+Underfull \hbox (badness 10000) in paragraph at lines 88--92
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 86--90
+Underfull \hbox (badness 10000) in paragraph at lines 88--92
 
  []
 
 
-Overfull \hbox (50.05145pt too wide) in paragraph at lines 92--96
+Overfull \hbox (50.05145pt too wide) in paragraph at lines 94--98
  []$ 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 98--105
+Underfull \hbox (badness 10000) in paragraph at lines 100--107
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 98--105
+Underfull \hbox (badness 10000) in paragraph at lines 100--107
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 98--105
+Underfull \hbox (badness 10000) in paragraph at lines 100--107
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 98--105
+Underfull \hbox (badness 10000) in paragraph at lines 100--107
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 98--105
+Underfull \hbox (badness 10000) in paragraph at lines 100--107
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 98--105
+Underfull \hbox (badness 10000) in paragraph at lines 100--107
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 98--105
+Underfull \hbox (badness 10000) in paragraph at lines 100--107
 
  []
 
@@ -1133,50 +1127,74 @@ g>]
 
 ] [3]
 {\cyrillictext \CYRG \cyrl \cyra \cyrv \cyra } 3.
-(C:\Program Files\MiKTeX\tex/latex/listings\lstlang1.sty
-File: lstlang1.sty 2020/03/24 1.8d listings language file
-)
-LaTeX Font Info:    Trying to load font information for T2A+cmss on input line 
-238.
 
+Overfull \hbox (1.31459pt too wide) in paragraph at lines 238--238
+|[]\T2A/cmr/bx/n/35.83 »сходный код ал-го-рит-мов| 
+ []
+
+LaTeX Font Info:    Trying to load font information for T2A+cmss on input line 
+240.
 (C:\Users\alena\AppData\Roaming\MiKTeX\tex/latex/cyrillic\t2acmss.fd
 File: t2acmss.fd 2001/08/11 v1.0a Computer Modern Cyrillic font definitions
+)
+LaTeX Font Info:    Trying to load font information for TS1+cmss on input line 
+255.
+
+(C:\Program Files\MiKTeX\tex/latex/base\ts1cmss.fd
+File: ts1cmss.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 ) [4
 
-]
+] [5]
 {\cyrillictext \CYRG \cyrl \cyra \cyrv \cyra } 4.
 
-LaTeX Warning: Command \cyryo invalid in math mode on input line 273.
+Overfull \hbox (18.2941pt too wide) in paragraph at lines 330--330
+|[]\T2A/cmr/bx/n/35.83 –езультат ра-бо-ты про-грам-
+ []
 
-Missing character: There is no Љ in font cmr12!
-(report.bbl) [5
+<img/plot.png, id=38, 816.47893pt x 476.20767pt>
+File: img/plot.png Graphic file (type png)
+<use img/plot.png>
+Package pdftex.def Info: img/plot.png  used on input line 337.
+(pdftex.def)             Requested size: 571.53136pt x 333.3431pt.
 
-] (report.aux)
+Overfull \hbox (92.19711pt too wide) in paragraph at lines 337--338
+[][][] 
+ []
 
-LaTeX Warning: There were multiply-defined labels.
+[6
 
- ) 
+ <./img/plot.png>] [7] [8] [9]
+{\cyrillictext \CYRG \cyrl \cyra \cyrv \cyra } 5.
+[10
+
+] (report.bbl) [11] (report.aux) ) 
 Here is how much of TeX's memory you used:
- 29778 strings out of 478864
- 733800 string characters out of 2858518
- 1341643 words of memory out of 10000000
- 47213 multiletter control sequences out of 15000+600000
- 414435 words of font info for 49 fonts, out of 8000000 for 9000
+ 29575 strings out of 478864
+ 732660 string characters out of 2858518
+ 1884909 words of memory out of 10000000
+ 47007 multiletter control sequences out of 15000+600000
+ 416748 words of font info for 53 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 99i,18n,103p,730b,1242s stack positions out of 5000i,500n,10000p,200000b,80000s
- <C:\Users\alena\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\labx35
-83.pk> <C:\Users\alena\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\la
-bx2074.pk> <C:\Users\alena\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi60
-0\larm1440.pk> <C:\Users\alena\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/d
-pi600\labx1440.pk><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmex1
-0.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Pr
-ogram Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Program Files/
-MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX/fonts/
-type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/
-amsfonts/cm/cmsy10.pfb>
-Output written on report.pdf (6 pages, 171347 bytes).
+ 99i,18n,103p,730b,1080s stack positions out of 5000i,500n,10000p,200000b,80000s
+ <C:\Users\alena\AppData\Local\MiKTeX\fonts/p
+k/ljfour/jknappen/ec/dpi600\tcrm1440.pk> <C:\Users\alena\AppData\Local\MiKTeX\f
+onts/pk/ljfour/jknappen/ec/dpi600\tcss1200.pk> <C:\Users\alena\AppData\Local\Mi
+KTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\lass1200.pk> <C:\Users\alena\AppData\Loca
+l\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\lasx1200.pk> <C:\Users\alena\AppData\
+Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\larm0600.pk> <C:\Users\alena\AppD
+ata\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\labx3583.pk> <C:\Users\alena\
+AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\labx2074.pk> <C:\Users\al
+ena\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\larm1440.pk> <C:\User
+s\alena\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\labx1440.pk><C:/P
+rogram Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Program Files
+/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX/font
+s/type1/public/amsfonts/cm/cmmi12.pfb><C:/Program Files/MiKTeX/fonts/type1/publ
+ic/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/c
+m/cmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
+
+Output written on report.pdf (12 pages, 285783 bytes).
 PDF statistics:
- 254 PDF objects out of 1000 (max. 8388607)
+ 408 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 18 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 23 words of extra memory for PDF output out of 10000 (max. 10000000)
 
