@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.9.4)  3 MAR 2022 20:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.9.4)  4 MAR 2022 00:28
 entering extended mode
 **./report.tex
 (report.tex
@@ -1145,58 +1145,70 @@ File: ts1cmss.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 ) [4
 
 ] [5]
+<img/formula.png, id=38, 407.3791pt x 124.75179pt>
+File: img/formula.png Graphic file (type png)
+<use img/formula.png>
+Package pdftex.def Info: img/formula.png  used on input line 343.
+(pdftex.def)             Requested size: 407.37811pt x 124.75146pt.
+ [6 <./img/formula.png>]
 {\cyrillictext \CYRG \cyrl \cyra \cyrv \cyra } 4.
 
-Overfull \hbox (18.2941pt too wide) in paragraph at lines 330--330
+Overfull \hbox (18.2941pt too wide) in paragraph at lines 345--345
 |[]\T2A/cmr/bx/n/35.83 –езультат ра-бо-ты про-грам-
  []
 
-<img/plot.png, id=38, 721.83965pt x 419.85428pt>
+<img/plot.png, id=43, 721.83965pt x 419.85428pt>
 File: img/plot.png Graphic file (type png)
 <use img/plot.png>
-Package pdftex.def Info: img/plot.png  used on input line 337.
+Package pdftex.def Info: img/plot.png  used on input line 352.
 (pdftex.def)             Requested size: 433.10713pt x 251.9145pt.
-[6
+[7
 
- <./img/plot.png>] [7] [8] [9]
-<img/differences.png, id=54, 1096.52518pt x 370.81393pt>
+ <./img/plot.png>] [8] [9] [10]
+<img/differences.png, id=58, 1096.52518pt x 370.81393pt>
 File: img/differences.png Graphic file (type png)
 <use img/differences.png>
-Package pdftex.def Info: img/differences.png  used on input line 526.
+Package pdftex.def Info: img/differences.png  used on input line 541.
 (pdftex.def)             Requested size: 493.43178pt x 166.86472pt.
 
-Overfull \hbox (14.09753pt too wide) in paragraph at lines 526--527
+Overfull \hbox (14.09753pt too wide) in paragraph at lines 541--542
 [][][] 
  []
 
-[10 <./img/differences.png>]
+[11 <./img/differences.png>]
 {\cyrillictext \CYRG \cyrl \cyra \cyrv \cyra } 5.
-[11
+
+Overfull \hbox (6.94344pt too wide) in paragraph at lines 557--558
+\T2A/cmr/m/n/14.4 про-ис-хо-дит ошиб-ка OverflowError: int too large to convert
+ to float: second_mult
+ []
+
+[12
 
 ]
-<img/plot2.png, id=63, 739.04678pt x 382.85893pt>
+<img/plot2.png, id=68, 739.04678pt x 382.85893pt>
 File: img/plot2.png Graphic file (type png)
 <use img/plot2.png>
-Package pdftex.def Info: img/plot2.png  used on input line 582.
+Package pdftex.def Info: img/plot2.png  used on input line 597.
 (pdftex.def)             Requested size: 443.43149pt x 229.71712pt.
-<img/2.png, id=64, 412.97144pt x 550.62857pt>
+<img/2.png, id=69, 412.97144pt x 550.62857pt>
 File: img/2.png Graphic file (type png)
 <use img/2.png>
-Package pdftex.def Info: img/2.png  used on input line 588.
+Package pdftex.def Info: img/2.png  used on input line 603.
 (pdftex.def)             Requested size: 330.37758pt x 440.50345pt.
- [12 <./img/plot2.png>]
-<img/1.png, id=70, 412.97144pt x 550.62857pt>
+ [13 <./img/plot2.png>]
+<img/1.png, id=74, 412.97144pt x 550.62857pt>
 File: img/1.png Graphic file (type png)
 <use img/1.png>
-Package pdftex.def Info: img/1.png  used on input line 590.
+Package pdftex.def Info: img/1.png  used on input line 605.
 (pdftex.def)             Requested size: 330.37758pt x 440.50345pt.
- (report.bbl) [13 <./img/2.png>] [14 <./img/1.png>]
+ (report.bbl) [14 <./img/2.png>] [15 <./img/1.png>]
 (report.aux) ) 
 Here is how much of TeX's memory you used:
- 29623 strings out of 478864
- 733424 string characters out of 2858518
- 1882909 words of memory out of 10000000
- 47051 multiletter control sequences out of 15000+600000
+ 29642 strings out of 478864
+ 733760 string characters out of 2858518
+ 1882907 words of memory out of 10000000
+ 47069 multiletter control sequences out of 15000+600000
  416748 words of font info for 53 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  99i,18n,103p,730b,1080s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1215,9 +1227,9 @@ public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfo
 nts/cm/cmmi12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10
 .pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Prog
 ram Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on report.pdf (15 pages, 854943 bytes).
+Output written on report.pdf (16 pages, 979889 bytes).
 PDF statistics:
- 428 PDF objects out of 1000 (max. 8388607)
+ 453 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 43 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 48 words of extra memory for PDF output out of 10000 (max. 10000000)
 

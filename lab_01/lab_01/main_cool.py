@@ -4,7 +4,7 @@ EPS = 1e-6
 
 
 class UDESolver:
-    def __init__(self, x_start, y_start, x_max, step, f, f_derivatives):
+    def __init__(self, x_start, y_start, x_max, step, f, f_approximation_number_s):
         if (x_start < x_max) != (step > 0):
             raise ValueError('Ошибка в шаге')
 
@@ -13,7 +13,7 @@ class UDESolver:
         self.x_max = x_max
         self.step = step
         self.f = f
-        self.f_derivatives = f_derivatives
+        self.f_approximation_number_s = f_approximation_number_s
         self.cmp_func = lambda x1, x2: x1 < x2 + EPS
 
     def reverse_move(self):
@@ -57,15 +57,13 @@ class UDESolver:
         return result
 
     def solve_picar(self, approx):
-        func = self.f_derivatives[approx - 1]
-
         result = []
         x, y = self.x_start, self.y_start
 
         while self.cmp_func(x, self.x_max):
             result.append(y)
             x += self.step
-            y = func(x)
+            y = self.f_approximation_number_s(x, approx)
 
         return result
 
@@ -74,24 +72,7 @@ def function(x, u):
     return x * x + u * u
 
 
-def fd1(x):
-    return pow(x, 3) / 3
-
-
-def fd2(x):
-    return fd1(x) + pow(x, 7) / 63
-
-
-def fd3(x):
-    return fd2(x) + 2 * pow(x, 11) / 2079 + pow(x, 15) / 59535
-
-
-def fd4(x):
-    return (fd2(x) + 2 * pow(x, 11) / 2079 + 13 * pow(x, 15) / 218295 +
-            82 * pow(x, 19) / 37328445 + 662 * pow(x, 23) / 10438212015 +
-            4 * pow(x, 27) / 3341878155 + pow(x, 31) / 109876902975)
-
-def fds(x, s):
+def function_approximation_number_s(x, s):
     first_sum = 0
     for i in range(1, s + 1):
         chisl = pow(x, pow(2, i + 1) - 1)
@@ -121,11 +102,11 @@ def fds(x, s):
 
     return first_sum + second_sum
 
-x = 1
-print(f'1: {fd1(x)} {fds(x, 1)}')
-print(f'2: {fd2(x)} {fds(x, 2)}')
-print(f'3: {fd3(x)} {fds(x, 3)}')
-print(f'4: {fd4(x)} {fds(x, 4)}')
+# x = 1
+# print(f'1: {fd1(x)} {fds(x, 1)}')
+# print(f'2: {fd2(x)} {fds(x, 2)}')
+# print(f'3: {fd3(x)} {fds(x, 3)}')
+# print(f'4: {fd4(x)} {fds(x, 4)}')
 
 def draw_plots(table):
     plt.figure(figsize=(30, 10))
@@ -141,9 +122,6 @@ def main():
     step_accuracy = 4
     x_max = 1.77
 
-    x_max = 2.0001
-    # step_accuracy = 6
-
     x_start = 0
     y_start = 0
     round_accuracy = 2
@@ -155,14 +133,14 @@ def main():
     pd.set_option('display.max_colwidth', None)
     pd.set_option('display.float_format', lambda x: f'%.{round_accuracy}f' % x)
 
-    solver = UDESolver(x_start, y_start, x_max, step, function, [fd1, fd2, fd3, fd4])
+    solver = UDESolver(x_start, y_start, x_max, step, function, function_approximation_number_s)
 
     table = pd.DataFrame(index=solver.x_range())
     table['x'] = solver.x_range()
     table = table.set_index('x')
     table['Euler'] = solver.solve_euler()
     table['Runge-Kutta'] = solver.solve_runge_kutta()
-    for i in range(4):
+    for i in range(5):
         table[f"Picard, {i + 1}"] = solver.solve_picar(i + 1)
 
 
@@ -177,7 +155,7 @@ def main():
     table2 = table2.set_index('x')
     table2['Euler'] = solver.solve_euler()
     table2['Runge-Kutta'] = solver.solve_runge_kutta()
-    for i in range(4):
+    for i in range(5):
         table2[f"Picard, {i + 1}"] = solver.solve_picar(i + 1)
 
     # print(table2)
@@ -195,20 +173,5 @@ if __name__ == "__main__":
     main()
 
 
-# Подбираем шаг:
 
-# Euler:
-# При 1e-1 y(1) = 0.29
-# При 1e-2 y(1) = 0.34
-# При 1e-3 y(1) = 0.35
-# При 1e-4 y(1) = 0.35
-# При 1e-5 y(1) = 0.35
-# Шаг ничего не меняет между 1e-3 и 1e-4
-
-# Runge:
-# При 1e-1 y(1) = 0.35
-# При 1e-2 y(1) = 0.35
-# При 1e-3 y(1) = 0.35
-# При 1e-4 y(1) = 0.35
-# При 1e-5 y(1) = 0.35
 
