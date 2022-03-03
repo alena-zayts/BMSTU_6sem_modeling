@@ -103,13 +103,16 @@ def draw_plots(table):
 
 def main():
     step_accuracy = 4
-    x_max = 2
+    x_max = 1.77
+
+    x_max = 2.0001
+    # step_accuracy = 6
 
     x_start = 0
     y_start = 0
     round_accuracy = 2
     step = float(f'1e-{step_accuracy}')
-    show_each = 1
+    show_each = 100
 
     pd.set_option('display.max_rows', None)
     pd.set_option('display.max_columns', None)
@@ -148,7 +151,7 @@ def main():
     full_table = full_table.sort_index(ascending=True)
 
     # print(full_table)
-    # draw_plots(full_table)
+    draw_plots(full_table)
 
 
 

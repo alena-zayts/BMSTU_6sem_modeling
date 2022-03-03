@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.9.4)  28 FEB 2022 21:36
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.9.4)  3 MAR 2022 20:49
 entering extended mode
 **./report.tex
 (report.tex
@@ -1151,50 +1151,73 @@ Overfull \hbox (18.2941pt too wide) in paragraph at lines 330--330
 |[]\T2A/cmr/bx/n/35.83 –езультат ра-бо-ты про-грам-
  []
 
-<img/plot.png, id=38, 816.47893pt x 476.20767pt>
+<img/plot.png, id=38, 721.83965pt x 419.85428pt>
 File: img/plot.png Graphic file (type png)
 <use img/plot.png>
 Package pdftex.def Info: img/plot.png  used on input line 337.
-(pdftex.def)             Requested size: 571.53136pt x 333.3431pt.
-
-Overfull \hbox (92.19711pt too wide) in paragraph at lines 337--338
-[][][] 
- []
-
+(pdftex.def)             Requested size: 433.10713pt x 251.9145pt.
 [6
 
  <./img/plot.png>] [7] [8] [9]
-{\cyrillictext \CYRG \cyrl \cyra \cyrv \cyra } 5.
-[10
+<img/differences.png, id=54, 1096.52518pt x 370.81393pt>
+File: img/differences.png Graphic file (type png)
+<use img/differences.png>
+Package pdftex.def Info: img/differences.png  used on input line 526.
+(pdftex.def)             Requested size: 493.43178pt x 166.86472pt.
 
-] (report.bbl) [11] (report.aux) ) 
+Overfull \hbox (14.09753pt too wide) in paragraph at lines 526--527
+[][][] 
+ []
+
+[10 <./img/differences.png>]
+{\cyrillictext \CYRG \cyrl \cyra \cyrv \cyra } 5.
+[11
+
+]
+<img/plot2.png, id=63, 739.04678pt x 382.85893pt>
+File: img/plot2.png Graphic file (type png)
+<use img/plot2.png>
+Package pdftex.def Info: img/plot2.png  used on input line 582.
+(pdftex.def)             Requested size: 443.43149pt x 229.71712pt.
+<img/2.png, id=64, 412.97144pt x 550.62857pt>
+File: img/2.png Graphic file (type png)
+<use img/2.png>
+Package pdftex.def Info: img/2.png  used on input line 588.
+(pdftex.def)             Requested size: 330.37758pt x 440.50345pt.
+ [12 <./img/plot2.png>]
+<img/1.png, id=70, 412.97144pt x 550.62857pt>
+File: img/1.png Graphic file (type png)
+<use img/1.png>
+Package pdftex.def Info: img/1.png  used on input line 590.
+(pdftex.def)             Requested size: 330.37758pt x 440.50345pt.
+ (report.bbl) [13 <./img/2.png>] [14 <./img/1.png>]
+(report.aux) ) 
 Here is how much of TeX's memory you used:
- 29575 strings out of 478864
- 732660 string characters out of 2858518
- 1884909 words of memory out of 10000000
- 47007 multiletter control sequences out of 15000+600000
+ 29623 strings out of 478864
+ 733424 string characters out of 2858518
+ 1882909 words of memory out of 10000000
+ 47051 multiletter control sequences out of 15000+600000
  416748 words of font info for 53 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  99i,18n,103p,730b,1080s stack positions out of 5000i,500n,10000p,200000b,80000s
- <C:\Users\alena\AppData\Local\MiKTeX\fonts/p
-k/ljfour/jknappen/ec/dpi600\tcrm1440.pk> <C:\Users\alena\AppData\Local\MiKTeX\f
-onts/pk/ljfour/jknappen/ec/dpi600\tcss1200.pk> <C:\Users\alena\AppData\Local\Mi
-KTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\lass1200.pk> <C:\Users\alena\AppData\Loca
-l\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\lasx1200.pk> <C:\Users\alena\AppData\
-Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\larm0600.pk> <C:\Users\alena\AppD
-ata\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\labx3583.pk> <C:\Users\alena\
-AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\labx2074.pk> <C:\Users\al
-ena\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\larm1440.pk> <C:\User
-s\alena\AppData\Local\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\labx1440.pk><C:/P
-rogram Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Program Files
-/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX/font
-s/type1/public/amsfonts/cm/cmmi12.pfb><C:/Program Files/MiKTeX/fonts/type1/publ
-ic/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/c
-m/cmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-
-Output written on report.pdf (12 pages, 285783 bytes).
+ <C:\Users\alena\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec
+/dpi600\tcrm1440.pk> <C:\Users\alena\AppData\Local\MiKTeX\fonts/pk/ljfour/jknap
+pen/ec/dpi600\tcss1200.pk> <C:\Users\alena\AppData\Local\MiKTeX\fonts/pk/ljfour
+/lh/lh-t2a/dpi600\lass1200.pk> <C:\Users\alena\AppData\Local\MiKTeX\fonts/pk/lj
+four/lh/lh-t2a/dpi600\lasx1200.pk> <C:\Users\alena\AppData\Local\MiKTeX\fonts/p
+k/ljfour/lh/lh-t2a/dpi600\larm0600.pk> <C:\Users\alena\AppData\Local\MiKTeX\fon
+ts/pk/ljfour/lh/lh-t2a/dpi600\labx3583.pk> <C:\Users\alena\AppData\Local\MiKTeX
+\fonts/pk/ljfour/lh/lh-t2a/dpi600\labx2074.pk> <C:\Users\alena\AppData\Local\Mi
+KTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\larm1440.pk> <C:\Users\alena\AppData\Loca
+l\MiKTeX\fonts/pk/ljfour/lh/lh-t2a/dpi600\labx1440.pk><C:/Program Files/MiKTeX/
+fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Program Files/MiKTeX/fonts/type1/
+public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfo
+nts/cm/cmmi12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10
+.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Prog
+ram Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
+Output written on report.pdf (15 pages, 854943 bytes).
 PDF statistics:
- 408 PDF objects out of 1000 (max. 8388607)
+ 428 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 23 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 43 words of extra memory for PDF output out of 10000 (max. 10000000)
 
