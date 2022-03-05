@@ -239,7 +239,7 @@
 
 \begin{lstlisting}[language=Python]
 	class UDESolver:
-		def __init__(self, x_start, y_start, x_max, step, f, f_approximation_number_s):
+		def __init__(self, x_start, y_start, x_max, step, f, f_derivatives):
 			if (x_start < x_max) != (step > 0):
 				raise ValueError('Ошибка в шаге')
 	
@@ -248,7 +248,7 @@
 		self.x_max = x_max
 		self.step = step
 		self.f = f
-		self.f_approximation_number_s = f_approximation_number_s
+		self.f_derivativesf_derivatives = f_derivativesf_derivatives
 		self.cmp_func = lambda x1, x2: x1 < x2 + EPS
 	
 		def reverse_move(self):
@@ -292,14 +292,14 @@
 			return result
 		
 		def solve_picar(self, approx):
-			
+			func = self.f_derivatives[approx - 1]
 			result = []
 			x, y = self.x_start, self.y_start
 			
 			while self.cmp_func(x, self.x_max):
 				result.append(y)
 				x += self.step
-				y = f_approximation_number_s(x, approx)
+				y = func(x)
 			
 			return result
 	
@@ -307,40 +307,27 @@
 	def function(x, u):
 		return x * x + u * u
 	
-	def function_approximation_number_s(x, s):
-		first_sum = 0
-		for i in range(1, s + 1):
-			chisl = pow(x, pow(2, i + 1) - 1)
-			znam = 1
-			for k in range(-1, i - 2 + 1):
-				znam *= (pow((pow(2, i - k) - 1), pow(2, k + 1)))
-			first_sum += (chisl / znam)
-		
-		second_sum = 0
-		for i in range(2, s + 1):
-			chisl = pow(x, pow(2, i + 1) - 1)
-			znam = 1
-			for k in range(-1, i - 2 + 1):
-				znam *= (pow((pow(2, i - k) - 1), pow(2, k + 1)))
-			first_mult = chisl / znam
-			
-			second_mult = 0
-			for j in range(i + 1, s + 1):
-				chisl = pow(x, pow(2, j + 1) - 1)
-				znam = 1
-				for p in range(-1, j - 2 + 1):
-					znam *= (pow((pow(2, j - p) - 1), pow(2, j + 1)))
-				second_mult += (chisl / znam)
-			second_sum += (first_mult * second_mult)
-			
-		second_sum *= 2
-		
-		return first_sum + second_sum
+	def fd1(x):
+		return pow(x, 3) / 3
+	
+	
+	def fd2(x):
+		return fd1(x) + pow(x, 7) / 63
+	
+	
+	def fd3(x):
+		return fd2(x) + 2 * pow(x, 11) / 2079 + pow(x, 15) / 59535
+	
+	
+	def fd4(x):
+		return (fd2(x) + 2 * pow(x, 11) / 2079 + 13 * pow(x, 15) / 218295 +
+		82 * pow(x, 19) / 37328445 + 662 * pow(x, 23) / 10438212015 +
+		4 * pow(x, 27) / 3341878155 + pow(x, 31) / 109876902975)
 \end{lstlisting}
 
-Приближение Пикара высчитывается по выведенной формуле:
+%Приближение Пикара высчитывается по выведенной формуле:
 
-\includegraphics[scale=1]{img/formula}\label{fig:formula}
+%\includegraphics[scale=1]{img/formula}\label{fig:formula}
 
 \chapter{Результат работы программы}
 

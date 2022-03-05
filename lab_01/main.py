@@ -91,41 +91,47 @@ def fd4(x):
             82 * pow(x, 19) / 37328445 + 662 * pow(x, 23) / 10438212015 +
             4 * pow(x, 27) / 3341878155 + pow(x, 31) / 109876902975)
 
-def fds(x, s):
-    first_sum = 0
-    for i in range(1, s + 1):
-        chisl = pow(x, pow(2, i + 1) - 1)
-        znam = 1
-        for k in range(-1, i - 2 + 1):
-            znam *= (pow((pow(2, i - k) - 1), pow(2, k + 1)))
-        first_sum += (chisl / znam)
-
-    second_sum = 0
-    for i in range(2, s + 1):
-        chisl = pow(x, pow(2, i + 1) - 1)
-        znam = 1
-        for k in range(-1, i - 2 + 1):
-            znam *= (pow((pow(2, i - k) - 1), pow(2, k + 1)))
-        first_mult = chisl / znam
-
-        second_mult = 0
-        for j in range(i + 1, s + 1):
-            chisl = pow(x, pow(2, j + 1) - 1)
-            znam = 1
-            for p in range(-1, j - 2 + 1):
-                znam *= (pow((pow(2, j - p) - 1), pow(2, j + 1)))
-            second_mult += (chisl / znam)
-        second_sum += (first_mult * second_mult)
-
-    second_sum *= 2
-
-    return first_sum + second_sum
-
-x = 1
-print(f'1: {fd1(x)} {fds(x, 1)}')
-print(f'2: {fd2(x)} {fds(x, 2)}')
-print(f'3: {fd3(x)} {fds(x, 3)}')
-print(f'4: {fd4(x)} {fds(x, 4)}')
+# def fds(x, s):
+#     first_sum = 0
+#     for i in range(1, s + 1):
+#         chisl = pow(x, pow(2, i + 1) - 1)
+#         znam = 1
+#         for k in range(-1, i - 2 + 1):
+#             znam *= pow(pow(2, i - k) - 1, pow(2, k + 1))
+#         first_sum += (chisl / znam)
+#
+#     second_sum = 0
+#     print('counting second sum')
+#     for i in range(1, s - 1 + 1):
+#         power_of_x1 = pow(2, i + 1) - 1
+#         chisl = pow(x, power_of_x1)
+#         znam = 1
+#         for k in range(-1, i - 2 + 1):
+#             znam *= pow(pow(2, i - k) - 1, pow(2, k + 1))
+#         first_mult = chisl / znam
+#         print(i, 'first_mult_znam', znam)
+#
+#         print('     counting second_mult')
+#         second_mult = 0
+#         for j in range(i + 1, s - 1 + 1):
+#             power_of_x2 = pow(2, j + 1) - 1
+#             chisl = pow(x, power_of_x2)
+#             znam = 1
+#             for p in range(-1, j - 2 + 1):
+#                 znam *= pow(pow(2, j - p) - 1, pow(2, p + 1))
+#             print(f'     {j-1} zznam {znam}')
+#             second_mult += (chisl / znam)
+#         second_sum += (first_mult * second_mult)
+#
+#     second_sum *= 2
+#
+#     return first_sum + second_sum
+#
+# x = 1
+# # print(f'1: {fd1(x)} {fds(x, 1)}')
+# # print(f'2: {fd2(x)} {fds(x, 2)}')
+# print(f'3: {fd3(x)} {fds(x, 3)}')
+# print(f'4: {fd4(x)} {fds(x, 4)}')
 
 def draw_plots(table):
     plt.figure(figsize=(30, 10))
@@ -141,7 +147,7 @@ def main():
     step_accuracy = 4
     x_max = 1.77
 
-    x_max = 2.0001
+    # x_max = 2.0001
     # step_accuracy = 6
 
     x_start = 0
@@ -194,21 +200,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-
-# Подбираем шаг:
-
-# Euler:
-# При 1e-1 y(1) = 0.29
-# При 1e-2 y(1) = 0.34
-# При 1e-3 y(1) = 0.35
-# При 1e-4 y(1) = 0.35
-# При 1e-5 y(1) = 0.35
-# Шаг ничего не меняет между 1e-3 и 1e-4
-
-# Runge:
-# При 1e-1 y(1) = 0.35
-# При 1e-2 y(1) = 0.35
-# При 1e-3 y(1) = 0.35
-# При 1e-4 y(1) = 0.35
-# При 1e-5 y(1) = 0.35
 

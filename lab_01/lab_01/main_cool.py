@@ -82,7 +82,7 @@ def function_approximation_number_s(x, s):
         first_sum += (chisl / znam)
 
     second_sum = 0
-    for i in range(2, s + 1):
+    for i in range(3, s + 1):
         chisl = pow(x, pow(2, i + 1) - 1)
         znam = 1
         for k in range(-1, i - 2 + 1):
@@ -103,10 +103,10 @@ def function_approximation_number_s(x, s):
     return first_sum + second_sum
 
 # x = 1
-# print(f'1: {fd1(x)} {fds(x, 1)}')
-# print(f'2: {fd2(x)} {fds(x, 2)}')
-# print(f'3: {fd3(x)} {fds(x, 3)}')
-# print(f'4: {fd4(x)} {fds(x, 4)}')
+# print(f'1: {fd1(x)} {function_approximation_number_s(x, 1)}')
+# print(f'2: {fd2(x)} {function_approximation_number_s(x, 2)}')
+# print(f'3: {fd3(x)} {function_approximation_number_s(x, 3)}')
+# print(f'4: {fd4(x)} {function_approximation_number_s(x, 4)}')
 
 def draw_plots(table):
     plt.figure(figsize=(30, 10))
@@ -140,7 +140,7 @@ def main():
     table = table.set_index('x')
     table['Euler'] = solver.solve_euler()
     table['Runge-Kutta'] = solver.solve_runge_kutta()
-    for i in range(5):
+    for i in range(4):
         table[f"Picard, {i + 1}"] = solver.solve_picar(i + 1)
 
 
@@ -155,7 +155,7 @@ def main():
     table2 = table2.set_index('x')
     table2['Euler'] = solver.solve_euler()
     table2['Runge-Kutta'] = solver.solve_runge_kutta()
-    for i in range(5):
+    for i in range(4):
         table2[f"Picard, {i + 1}"] = solver.solve_picar(i + 1)
 
     # print(table2)
