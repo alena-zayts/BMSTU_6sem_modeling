@@ -25,6 +25,7 @@ def up(z, p):
 def k(z, p):
     return k0 * ((T(z, p) / 300) ** 2)
 
+
 def psi(uF_tuple):
     u, F = uF_tuple
     return F - m * c * u / 2
@@ -51,7 +52,7 @@ class RungeKutta4Solver:
 
         return x_n_plus_1, y_n_plus_1, z_n_plus_1
 
-    def solve(self, x_start, y_start, z_start, x_max, h):
+    def solve(self, x_start, y_start, z_start, x_max, h, show_result=False):
         solution_steps = []
         x, y, z = x_start, y_start, z_start
 
@@ -59,7 +60,8 @@ class RungeKutta4Solver:
             solution_steps.append([x, y, z])
             x, y, z = self.next_xyz(x, y, z, h)
 
-        process_results(solution_steps)
+        if show_result:
+            process_results(solution_steps)
 
         return tuple((y, z))
 
@@ -75,8 +77,9 @@ class HalfDivisionSolver:
 
         while abs(x1 * x2 / x) > EPS:
             cur_y = self.f(x)
+            # print(f'x={x}, cur_y={cur_y}, x1={x1}, fx1={self.f(x1)}, x2={x2}, fx2={self.f(x2)}')
             if abs(cur_y) < EPS:
-                return cur_y
+                return x
 
             if self.f(x1) * cur_y > 0:
                 x1 = x
@@ -85,11 +88,17 @@ class HalfDivisionSolver:
 
             x = (x1 + x2) / 2
 
+            if x < 0:
+                print('ERRR')
+
         return x
 
-global P_SHOW
+
+P_SHOW = 0
+
 
 def process_results(solution_steps):
+    # pass
     global P_SHOW
     x, y, z = [step[0] for step in solution_steps], \
               [step[1] for step in solution_steps], \
@@ -112,8 +121,9 @@ def process_results(solution_steps):
     print(table.iloc[::show_each, :])
     print('\n\n\n')
 
+    # все на разных
     fig = plt.figure(figsize=(12, 7))
-    plt.xlabel('z')
+    plt.title(f'p={P_SHOW}')
     # Вывод графиков
     plt.subplot(1, 2, 1)
     plt.plot(x, y, '-', label='u(z)')
@@ -121,10 +131,36 @@ def process_results(solution_steps):
     ups = list(map(lambda x0: up(x0, P_SHOW), x))
     plt.plot(x, ups, '-', label='up(z)')
     plt.legend()
+    plt.xlabel('z')
+    plt.grid()
     plt.subplot(1, 2, 2)
     plt.plot(x, z, '--', label='F(z)')
+    plt.legend()
+    plt.xlabel('z')
+    plt.grid()
     plt.savefig(f'p{P_SHOW}.png')
     plt.close(fig)
+
+    # # по n
+    # n = 6
+    # g = P_SHOW
+    # i = (P_SHOW - p_range[0]) % n
+    # if (P_SHOW - p_range[0]) % n == 0:
+    #     fig = plt.figure(figsize=(15, 15))
+    #     plt.title(f'p: {P_SHOW}-{P_SHOW + n}')
+    #     plt.xlabel('z')
+    # # Вывод графиков
+    # plt.subplot(n, 2, (P_SHOW - p_range[0]) * 2 + 1)
+    # plt.plot(x, y, '-', label='u(z)')
+    # # ups = [up(x0, P_SHOW) for x0 in x]
+    # ups = list(map(lambda x0: up(x0, P_SHOW), x))
+    # plt.plot(x, ups, '-', label='up(z)')
+    # plt.subplot(n, 2, (P_SHOW - p_range[0]) * 2 + 2)
+    # plt.plot(x, z, '--', label='F(z)')
+    # plt.legend()
+    # if (P_SHOW - p_range[0]) % n == n - 1:
+    #     plt.savefig(f'p{P_SHOW}.png')
+    #     # plt.close(fig)
 
 
 def main():
@@ -142,26 +178,20 @@ def main():
     os.remove('results.txt')
     with open('results.txt', 'a') as f:
         for p in range(*p_range):
-            global P_SHOW
-            P_SHOW = p
-
-            sys.stdout = f
             rk_f_func = lambda x, u, v: -3 * R * v * k(x, p) / c
             rk_phi_func = lambda x, u, v: R * c * k(x, p) * (up(x, p) - u) - (v / x)
             u_min_func = lambda ksi: ksi * up(ksi, p)
             hd_f_func = lambda ksi: \
                 psi(RungeKutta4Solver(rk_f_func, rk_phi_func).solve(z_min, u_min_func(ksi), F_min, z_max, h))
-            solution = HalfDivisionSolver(hd_f_func).solve(ksi_min, ksi_max)
+            ksi = HalfDivisionSolver(hd_f_func).solve(ksi_min, ksi_max)
 
+            global P_SHOW
+            P_SHOW = p
+            sys.stdout = f
+            RungeKutta4Solver(rk_f_func, rk_phi_func).solve(z_min, u_min_func(ksi), F_min, z_max, h, show_result=True)
             sys.stdout = original_stdout  #
-            print(f'p: {p}, solution: {solution}')
+            print(f'p: {p}, solution_ksi: {ksi}')
 
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
