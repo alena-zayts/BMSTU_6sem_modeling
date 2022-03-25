@@ -88,9 +88,6 @@ class HalfDivisionSolver:
 
             x = (x1 + x2) / 2
 
-            if x < 0:
-                print('ERRR')
-
         return x
 
 
@@ -134,6 +131,7 @@ def process_results(solution_steps):
     plt.xlabel('z')
     plt.grid()
     plt.subplot(1, 2, 2)
+    plt.ylim([0, 9000])
     plt.plot(x, z, '--', label='F(z)')
     plt.legend()
     plt.xlabel('z')
@@ -184,6 +182,7 @@ def main():
             hd_f_func = lambda ksi: \
                 psi(RungeKutta4Solver(rk_f_func, rk_phi_func).solve(z_min, u_min_func(ksi), F_min, z_max, h))
             ksi = HalfDivisionSolver(hd_f_func).solve(ksi_min, ksi_max)
+
 
             global P_SHOW
             P_SHOW = p
