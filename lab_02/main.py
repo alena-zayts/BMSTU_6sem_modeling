@@ -6,7 +6,7 @@ import os
 
 EPS = 1e-4
 c = 3e10
-k0 = 8e-4
+k0 = 8e-4  # k0 = 0.01 # k0 = 0.008
 m = 0.786
 R = 0.35
 Tw = 2000
@@ -19,7 +19,7 @@ def T(z, p):
 
 
 def up(z, p):
-    return 3.084e-4 / (exp(4.709e4 / T(z, p)) - 1)
+    return 3.084e-4 / (exp(4.799e4 / T(z, p)) - 1)
 
 
 def k(z, p):
@@ -75,11 +75,8 @@ class HalfDivisionSolver:
         x2 = x_max
         x = (x1 + x2) / 2
 
-        while abs(x1 * x2 / x) > EPS:
+        while abs((x1 - x2) / x) > EPS:
             cur_y = self.f(x)
-            # print(f'x={x}, cur_y={cur_y}, x1={x1}, fx1={self.f(x1)}, x2={x2}, fx2={self.f(x2)}')
-            if abs(cur_y) < EPS:
-                return x
 
             if self.f(x1) * cur_y > 0:
                 x1 = x
@@ -95,7 +92,6 @@ P_SHOW = 0
 
 
 def process_results(solution_steps):
-    # pass
     global P_SHOW
     x, y, z = [step[0] for step in solution_steps], \
               [step[1] for step in solution_steps], \
@@ -106,25 +102,20 @@ def process_results(solution_steps):
     table['y (u)'] = y
     table['z (F)'] = z
 
-    round_accuracy = 3
-    show_each = 10  # -round_accuracy - 1
+    show_each = 10
 
     pd.set_option('display.max_rows', None)
     pd.set_option('display.max_columns', None)
     pd.set_option('display.max_colwidth', None)
-    pd.set_option('display.float_format', lambda x: f'%.{round_accuracy}f' % x)
 
     print(f'P: {P_SHOW}')
     print(table.iloc[::show_each, :])
     print('\n\n\n')
 
-    # все на разных
     fig = plt.figure(figsize=(12, 7))
     plt.title(f'p={P_SHOW}')
-    # Вывод графиков
     plt.subplot(1, 2, 1)
     plt.plot(x, y, '-', label='u(z)')
-    # ups = [up(x0, P_SHOW) for x0 in x]
     ups = list(map(lambda x0: up(x0, P_SHOW), x))
     plt.plot(x, ups, '-', label='up(z)')
     plt.legend()
@@ -139,32 +130,11 @@ def process_results(solution_steps):
     plt.savefig(f'p{P_SHOW}.png')
     plt.close(fig)
 
-    # # по n
-    # n = 6
-    # g = P_SHOW
-    # i = (P_SHOW - p_range[0]) % n
-    # if (P_SHOW - p_range[0]) % n == 0:
-    #     fig = plt.figure(figsize=(15, 15))
-    #     plt.title(f'p: {P_SHOW}-{P_SHOW + n}')
-    #     plt.xlabel('z')
-    # # Вывод графиков
-    # plt.subplot(n, 2, (P_SHOW - p_range[0]) * 2 + 1)
-    # plt.plot(x, y, '-', label='u(z)')
-    # # ups = [up(x0, P_SHOW) for x0 in x]
-    # ups = list(map(lambda x0: up(x0, P_SHOW), x))
-    # plt.plot(x, ups, '-', label='up(z)')
-    # plt.subplot(n, 2, (P_SHOW - p_range[0]) * 2 + 2)
-    # plt.plot(x, z, '--', label='F(z)')
-    # plt.legend()
-    # if (P_SHOW - p_range[0]) % n == n - 1:
-    #     plt.savefig(f'p{P_SHOW}.png')
-    #     # plt.close(fig)
-
 
 def main():
-    h = 1e-3
+    h = 1e-2
 
-    z_min = 1e-7  # zero division
+    z_min = 0
     z_max = 1
 
     F_min = 0
@@ -177,12 +147,15 @@ def main():
     with open('results.txt', 'a') as f:
         for p in range(*p_range):
             rk_f_func = lambda x, u, v: -3 * R * v * k(x, p) / c
-            rk_phi_func = lambda x, u, v: R * c * k(x, p) * (up(x, p) - u) - (v / x)
-            u_min_func = lambda ksi: ksi * up(ksi, p)
+            rk_phi_func = lambda x, u, v: (
+                R * c * k(x, p) * (up(x, p) - u) - (v / x) if x != 0  # zero division
+                else
+                R * c * k(x, p) * (up(x, p) - u) / 2)
+            u_min_func = lambda ksi: ksi * up(0, p)
+
             hd_f_func = lambda ksi: \
                 psi(RungeKutta4Solver(rk_f_func, rk_phi_func).solve(z_min, u_min_func(ksi), F_min, z_max, h))
             ksi = HalfDivisionSolver(hd_f_func).solve(ksi_min, ksi_max)
-
 
             global P_SHOW
             P_SHOW = p
