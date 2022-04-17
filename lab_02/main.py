@@ -12,6 +12,7 @@ R = 0.35
 Tw = 2000
 T0 = 1e4
 p_range = [4, 15 + 1]
+p_range = [4, 5]
 
 
 def T(z, p):
@@ -102,7 +103,7 @@ def process_results(solution_steps):
     table['y (u)'] = y
     table['z (F)'] = z
 
-    show_each = 10
+    show_each = 1
 
     pd.set_option('display.max_rows', None)
     pd.set_option('display.max_columns', None)
@@ -116,6 +117,8 @@ def process_results(solution_steps):
     plt.title(f'p={P_SHOW}')
     plt.subplot(1, 2, 1)
     plt.plot(x, y, '-', label='u(z)')
+    print(x)
+    print(y)
     ups = list(map(lambda x0: up(x0, P_SHOW), x))
     plt.plot(x, ups, '-', label='up(z)')
     plt.legend()
@@ -128,11 +131,12 @@ def process_results(solution_steps):
     plt.xlabel('z')
     plt.grid()
     plt.savefig(f'p{P_SHOW}.png')
+    plt.show()
     plt.close(fig)
 
 
 def main():
-    h = 1e-2
+    h = 1e-1
 
     z_min = 0
     z_max = 1
