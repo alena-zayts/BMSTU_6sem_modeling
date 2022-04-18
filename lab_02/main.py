@@ -6,7 +6,7 @@ import os
 
 EPS = 1e-4
 c = 3e10
-k0 = 8e-4  # k0 = 0.01 # k0 = 0.008
+k0 = 8e-3  # k0 = 0.01 # k0 = 0.008
 m = 0.786
 R = 0.35
 Tw = 2000
@@ -125,7 +125,7 @@ def process_results(solution_steps):
     plt.xlabel('z')
     plt.grid()
     plt.subplot(1, 2, 2)
-    plt.ylim([0, 9000])
+    #plt.ylim([0, 9000])
     plt.plot(x, z, '--', label='F(z)')
     plt.legend()
     plt.xlabel('z')
@@ -136,7 +136,7 @@ def process_results(solution_steps):
 
 
 def main():
-    h = 1e-1
+    h = 1e-4
 
     z_min = 0
     z_max = 1
