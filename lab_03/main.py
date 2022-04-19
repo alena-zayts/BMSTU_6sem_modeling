@@ -16,6 +16,12 @@ T0 = 1e4
 p = 4
 
 
+z_min = 0
+z_max = 1
+
+h = 1e-2
+
+
 def T(z):
     return (Tw - T0) * (z ** p) + T0
 
@@ -51,7 +57,9 @@ class Solver:
         self.forward()
         self.bacward()
         self.count_F_array()
-        return self.z_array[:-1], self.zF_array, self.y_array, self.F_array
+        self.count_F_array_by_div()
+        self.count_div_F()
+        return self.z_array[:-1], self.zF_array, self.y_array, self.F_array, self.F_div_array, self.div_F_array
 
     def forward(self):
         self.ksi_array = []
@@ -89,13 +97,14 @@ class Solver:
         # self.y_array[-1] = (self.PN - self.MN * self.eta_array[-1]) / (self.MN * self.ksi_array[-1] + self.KN) - наверное правильно
         # self.y_array[-1] = (self.PN - self.MN * 1e-6) / (self.MN * 0 + self.KN)
 
-
         # self.y_array[-1] = (self.PN - self.MN * self.eta_array[-1]) / (self.MN * self.ksi_array[-1] + self.KN)
         # self.y_array[-1] = (self.PN - self.MN * 1e-6) / (self.MN * 0 + self.KN)
-        self.y_array[-1] = (self.PN - self.KN * self.eta_array[-1]) / (self.KN * self.ksi_array[-1] + self.MN)
+
         # x1 = (self.PN - self.KN * self.eta_array[-1]) / (self.KN * self.ksi_array[-1] + self.MN)
         # x2 = (self.PN - self.MN * self.eta_array[-1]) / (self.MN * self.ksi_array[-1] + self.KN)
+        # x3 = 5.075848e-07
 
+        self.y_array[-1] = (self.PN - self.KN * self.eta_array[-1]) / (self.KN * self.ksi_array[-1] + self.MN)
         for i in range(self.N - 1 - 1, -1, -1):
             # self.y_array[i] = self.ksi_array[i + 1] * self.y_array[i + 1] + self.eta_array[i + 1]
             self.y_array[i] = self.ksi_array[i] * self.y_array[i + 1] + self.eta_array[i]
@@ -154,6 +163,30 @@ class Solver:
             self.F_array.append(F_plus_half)
 
         self.F_array.append(self.alpha * (self.y_array[-1] - self.beta))
+
+    def count_F_array_by_div(self):
+        self.F_div_array = [self.F0]
+
+        z0 = self.z_array[0]
+        y0 = self.y_array[0]
+
+        for i in range(1, len(self.z_array) - 1):
+            zn = self.z_array[i]
+            yn = self.y_array[i]
+            sum1 = self.f_func(zn) + self.f_func(z0)
+            sum2 = self.p_func(zn) * yn + self.p_func(z0) * y0
+            F0 = R * zn * (sum1 - sum2) / 2
+            self.F_div_array.append(F0)
+
+        # !!!
+        # self.F_div_array.append(F0)
+        self.F_div_array.append(self.alpha * (self.y_array[-1] - self.beta))
+
+    def count_div_F(self):
+        self.div_F_array = []
+        for i in range(self.N):
+            div_F = c * k(self.z_array[i]) * (up(self.z_array[i]) - self.y_array[i])
+            self.div_F_array.append(div_F)
 
     def func_n_minus_half(self, func, n):
         return float(func(self.z_array[n - 1]) + func(self.z_array[n])) / 2
@@ -220,35 +253,47 @@ class Solver:
 
 
 
-def process_results(z, zF, u, F):
-    print('z    u')
-    for z0, u0 in zip(z, u):
-        print(z0, u0)
+def process_results(z, zF, u, F, F_div, div):
 
-    print('z    F')
-    for z0, F0 in zip(zF, F):
-        print(z0, F0)
+    def make_pd():
+        symb = None
+        z_pd = z_reformatted()
+        u_pd = [u[0]]
+        F_pd = [F[0]]
+        F_div_pd = [F_div[0]]
+        for i in range(1, len(F) - 1):
+            F_pd.append(F[i])
+            F_div_pd.append(F_div[i])
+            F_pd.append(symb)
+            F_div_pd.append(symb)
+            u_pd.append(symb)
+            u_pd.append(u[i])
 
-    # F.append('-')
-    # table = pd.DataFrame(index=z)
-    # table['z'] = z
-    # table = table.set_index('z')
-    # table['u'] = u
-    # table['F'] = F
+        F_pd[-1] = F[-1]
+        F_div_pd[-1] = F_div[-1]
 
-    # show_each = 1
-    #
-    # pd.set_option('display.max_rows', None)
-    # pd.set_option('display.max_columns', None)
-    # pd.set_option('display.max_colwidth', None)
-    #
-    #
-    # print(table.iloc[::show_each, :])
-    # print('\n\n\n')
+        table = pd.DataFrame(index=z_pd)
+        table['z'] = z_pd
+        table['u'] = u_pd
+        table['F'] = F_pd
+        table['F_div'] = F_div_pd
+        table = table.set_index('z')
+
+        show_each = 1
+        pd.set_option('display.max_rows', None)
+        pd.set_option('display.max_columns', None)
+        pd.set_option('display.max_colwidth', None)
+        pd.options.display.float_format = '{:,.1e}'.format
+        print(table.iloc[::show_each, :])
+        print('\n\n\n')
+
+        return table
+
+    make_pd()
 
     fig = plt.figure(figsize=(12, 7))
 
-    plt.subplot(1, 2, 1)
+    plt.subplot(1, 4, 1)
     plt.plot(z, u, '-', label='u(z)')
 
     ups = list(map(lambda z0: up(z0), z))
@@ -257,14 +302,24 @@ def process_results(z, zF, u, F):
     plt.xlabel('z')
     plt.grid()
 
-    plt.subplot(1, 2, 2)
-    # w, e = z_reformatted(z), F[:-1]
-    # print(w)
-    # print(e)
+    plt.subplot(1, 4, 2)
     plt.plot(zF, F, '--', label='F(z)')
     plt.legend()
     plt.xlabel('z')
     plt.grid()
+
+    plt.subplot(1, 4, 3)
+    plt.plot(zF, F_div, '--', label='F_div(z)')
+    plt.legend()
+    plt.xlabel('z')
+    plt.grid()
+
+    plt.subplot(1, 4, 4)
+    plt.plot(z, div, '--', label='divF')
+    plt.legend()
+    plt.xlabel('z')
+    plt.grid()
+
     plt.savefig(f'graph.png')
     plt.show()
     plt.close(fig)
@@ -281,59 +336,17 @@ def f_func(z):
     return c * k(z) * up(z)
 
 
-def z_reformatted(z):
-    new_z = []
-    for i in range(len(z) - 1):
-        new_z.append((z[i] + z[i + 1]) / 2)
+def z_reformatted():
+    new_z = list(np.arange(z_min, z_max + EPS, h / 2))
     return new_z
 
 
 def main():
-    h = 1e-4
-
-    z_min = 0
-    z_max = 1
 
     solver = Solver(k_func, p_func, f_func)
-    z, zF, u, F = solver.solve(z_min, z_max, h)
-    process_results(z, zF, u, F)
+    z, zF, u, F, F_div, div = solver.solve(z_min, z_max, h)
+    process_results(z, zF, u, F, F_div, div)
 
-
-
-
-# def main():
-#     h = 1e-1
-#
-#     z_min = 0
-#     z_max = 1
-#
-#     F_min = 0
-#
-#     ksi_min = 0.01
-#     ksi_max = 1
-#
-#     original_stdout = sys.stdout
-#     os.remove('results.txt')
-#     with open('results.txt', 'a') as f:
-#         for p in range(*p_range):
-#             rk_f_func = lambda x, u, v: -3 * R * v * k(x, p) / c
-#             rk_phi_func = lambda x, u, v: (
-#                 R * c * k(x, p) * (up(x, p) - u) - (v / x) if x != 0  # zero division
-#                 else
-#                 R * c * k(x, p) * (up(x, p) - u) / 2)
-#             u_min_func = lambda ksi: ksi * up(0, p)
-#
-#             hd_f_func = lambda ksi: \
-#                 psi(RungeKutta4Solver(rk_f_func, rk_phi_func).solve(z_min, u_min_func(ksi), F_min, z_max, h))
-#
-#             ksi = HalfDivisionSolver(hd_f_func).solve(ksi_min, ksi_max)
-#
-#             global P_SHOW
-#             P_SHOW = p
-#             sys.stdout = f
-#             RungeKutta4Solver(rk_f_func, rk_phi_func).solve(z_min, u_min_func(ksi), F_min, z_max, h, show_result=True)
-#             sys.stdout = original_stdout  #
-#             print(f'p: {p}, solution_ksi: {ksi}')
 
 
 if __name__ == '__main__':

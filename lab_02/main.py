@@ -136,7 +136,7 @@ def process_results(solution_steps):
 
 
 def main():
-    h = 1e-4
+    h = 1e-2
 
     z_min = 0
     z_max = 1
