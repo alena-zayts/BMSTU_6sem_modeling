@@ -48,7 +48,7 @@ def func_minus_half(func, n, m=None):
 class Solver:
     # a2 = 2.049
     # b2 = 0.563e-3
-    def __init__(self, xmin=0, xmax=10, h=1e-2, tmin=0, tau=1, EPS=None, Fmax=50, tmax=60, a2=2.049, b2=0.563e-3):
+    def __init__(self, xmin=0, xmax=10, h=1e-2, tmin=0, tau=1, EPS=None, Fmax=50, tmax=60, a2=2.049, b2=0.563e-3, use_constant_F0t=False):
         self.xmin = xmin
         self.xmax = xmax
         self.h = h
@@ -63,6 +63,7 @@ class Solver:
         self.l = xmax - xmin
         self.a2 = a2
         self.b2 = b2
+        self.use_constant_F0t = use_constant_F0t
 
     # коэффициент теплопроводимости материала стержня
     def lambda_T(self, n, m):
@@ -92,13 +93,13 @@ class Solver:
 
     # !?
     # импульс излучения
-    # Если в настоящей работе задать поток постоянным, т.е. F0(t) =const, то будет
-    # происходить формирование температурного поля от начальной температуры T0
-    # до некоторого установившегося (стационарного) распределения T(x,t)
-    # Это поле в дальнейшем с течением времени меняться не будет. Это полезный факт для тестирования программы.
-    # Если после разогрева стержня положить поток F(t)=0, то будет происходить
-    # остывание, пока температура не выровняется по всей длине и не станет равной T0
     def F0_t(self, m):
+        if self.use_constant_F0t:
+            if m < self.use_constant_F0t['stop_hitting']:
+                return self.Fmax * self.use_constant_F0t['constantF0t_t'] * exp(-(self.use_constant_F0t['constantF0t_t'] / self.tmax - 1)) / self.tmax
+            else:
+                return 0
+
         t = self.tmin + self.tau * m
         return self.Fmax * t * exp(-(t / self.tmax - 1)) / self.tmax
         # return Fmax * t_array[m] * exp(-(t_array[m] / tmax - 1)) / tmax
@@ -243,6 +244,8 @@ class Solver:
         return T_cur_array
 
     def stop_timing(self):
+        if self.use_constant_F0t:
+            return len(self.T) > self.use_constant_F0t['stop_timing']
         T_array_prev, T_array_new = self.T[-2], self.T[-1]
         for T_prev, T_cur in zip(T_array_prev, T_array_new):
             if abs((T_prev - T_cur) / T_cur) > 10e-4:
@@ -380,35 +383,118 @@ def study_steps():
 # коэффициент теплоемкости материала стержня
 # def c_T(self, n, m):
 #       return self.a2 + self.b2 * pow(self.T[m][n], m2) - c2 / (self.T[m][n] ** 2)
-def study_ab():
+def study3_ab():
     print('research ab')
-    a2_array = [2.049, 3, 5]
-    b2_array = [0.563e-3, 0.6e-2, 0.6e-1]
+    # 2 значения -- по условию
+    a2_array = [1, 2.049, 3, 5]
+    b2_array = [0.1e-3, 0.563e-3, 0.6e-2]
     q=0
-    fig = plt.figure(figsize=(12, 7))
+    fig = plt.figure(figsize=(14, 9))
 
 
     for i, a2 in enumerate(a2_array):
         for j, b2 in enumerate(b2_array):
+            title = f"{q} a2={a2} b2={b2}"
             plt.subplot(len(a2_array), len(b2_array), i * len(b2_array) + j + 1)
             q+=1
+
             solver = Solver(a2=a2, b2=b2)
             solver.solve()
             T, t_array = solver.get_results()
 
             T_0t = [T_m[0] for T_m in T]
-            plt.plot(t_array, T_0t)
+            plt.xticks(list(range(0, 100, 10)))
+            plt.plot(t_array, T_0t, label=title)
+            plt.legend()
 
             print(f'a2={a2}, b2={b2}, T_0t={T_0t}')
-            title = f"{q} a2={a2} b2={b2}"
-            plt.title(title)
+
+            #plt.title(title)
+
 
     plt.savefig(f"a2b2.png")
     plt.show()
 
+# Рассмотреть влияние на получаемые результаты амплитуды импульса Fmax и времени maxt
+# (определяют крутизну фронтов и длительность импульса).
+def study5_Ftmax():
+    # сильнее нагревается
+    def study_cm():
+        q = 0
+        fig = plt.figure(figsize=(14, 9))
+        for i, Fmax in enumerate(Fmax_array):
+            for j, tmax in enumerate(tmax_array):
+                title = f"Fmax={Fmax} tmax={tmax}"
+                plt.subplot(len(Fmax_array), len(tmax_array), i * len(tmax_array) + j + 1)
+                q+=1
+
+                solver = Solver(Fmax=Fmax, tmax=tmax)
+                solver.solve()
+                T, t_array = solver.get_results()
+
+                for cm in [0, int(len(T[0]) / 4), int(len(T[0]) / 2), len(T[0]) - 1]:
+                    T_t = [T_m[cm] for T_m in T]
+                    plt.xticks(list(range(0, 100, 10)))
+                    plt.xlabel("t, c")
+                    plt.ylim((300, 700))
+                    plt.grid()
+                    plt.plot(t_array, T_t, label=title+f'cm={solver.x_array[cm]}')
+                plt.legend()
+
+                print(f'Fmax={Fmax}, tmax={tmax}')
+        plt.savefig(f"Fmaxtmax_cm.png")
+        plt.show()
+
+    # позже выходит на плато
+    def study_t():
+        q = 0
+        fig = plt.figure(figsize=(14, 9))
+        for i, Fmax in enumerate(Fmax_array):
+            for j, tmax in enumerate(tmax_array):
+                title = f"Fmax={Fmax} tmax={tmax}"
+                plt.subplot(len(Fmax_array), len(tmax_array), i * len(tmax_array) + j + 1)
+                q+=1
+
+                solver = Solver(Fmax=Fmax, tmax=tmax)
+                solver.solve()
+                T, t_array = solver.get_results()
+
+                for t in [0, int(len(T) / 4), int(len(T) / 2), len(T) - 1]:
+                    T_t = T[t]
+                    plt.xticks(list(range(0, 10, 1)))
+                    plt.xlabel("x, cm")
+                    plt.ylim((300, 750))
+                    plt.grid()
+                    plt.plot(solver.x_array, T_t, label=title+f't={solver.t_array[t]}')
+                plt.legend()
+
+                print(f'Fmax={Fmax}, tmax={tmax}')
+        plt.savefig(f"Fmaxtmax_t.png")
+        plt.show()
+
+    # Fmax = 50
+    # tmax = 60
+    Fmax_array = [40, 50, 60]
+    tmax_array = [50, 60, 70]
+    study_t()
+    study_cm()
 
 
-
+# Если в настоящей работе задать поток постоянным, т.е. F0(t) =const, то будет
+# происходить формирование температурного поля от начальной температуры T0
+# до некоторого установившегося (стационарного) распределения T(x,t)
+# Это поле в дальнейшем с течением времени меняться не будет. Это полезный факт для тестирования программы.
+# Если после разогрева стержня положить поток F(t)=0, то будет происходить
+# остывание, пока температура не выровняется по всей длине и не станет равной T0
+def test_with_constant_F0_t():
+    # этот флаг выставляет константную F0_t(t=1) до 50 итерации по времени (должен выйти на константы)
+    # далее считаем, что стержень нагрелся, и F0_t=0 (температура по всей длине должна стать 300
+    # прекращаем все итерации на t=100,
+    solver = Solver(use_constant_F0t={"constantF0t_t": 1, 'stop_timing':100, 'stop_hitting': 50})
+    solver.solve()
+    solver.show_results()
+    #solver.print_results()
+    print(solver.check_steps_ok())
 
 
 def main():
@@ -419,7 +505,16 @@ def main():
     # print(solver.check_steps_ok())
 
     #study_steps()
-    study_ab()
+
+
+    # OK
+    #study3_ab()
+
+    # OK
+    # study5_Ftmax()
+
+    # SUPER OK
+    test_with_constant_F0_t()
 
 
 
