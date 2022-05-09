@@ -117,6 +117,7 @@ T.append([T0] * N)
 
 
 # поступает m, и считаю ддля шага m, то есть начать с 1
+# N должна быть просто последний элемент массива
 def count_boundary_conditions(m):
     prevT = T[m - 1]
     K0 = (h * func_plus_half(c_T, 0, m - 1) / 8 +
@@ -134,95 +135,72 @@ def count_boundary_conditions(m):
           h * c_T(0, m - 1) * T[m - 1][0] / 4 +
           alpha_x(0) * tau * T0 +
           h * tau * (
-                F0_t(m - 1) * (k_T(0, m - 1) * exp_func(0, m - 1) + func_plus_half(k, 0, m - 1) * func_plus_half(exp_Tx, 0, m - 1)) +
-                2 * T0 * (func_plus_half(alpha_x, 0) + alpha_x(n)) / R
-          )/ 4)
+                F0_t(m - 1) * (k_T(0, m - 1) * exp_Tx(0, m - 1) + func_plus_half(k_T, 0, m - 1) * func_plus_half(exp_Tx, 0, m - 1)) +
+                2 * T0 * (func_plus_half(alpha_x, 0) + alpha_x(0)) / R
+          ) / 4)
+
+    KN = (h * func_minus_half(c_T, N, m - 1) / 8 +
+          h * c_T(N, m - 1) / 4 +
+          tau * func_minus_half(kappa_T, N, m-1) / h +
+          h * tau * func_minus_half(alpha_x, N) / (4 * R) +
+          h * tau * alpha_x(N) / (2 * R) +
+          alpha_x(N) * tau)
+
+
+    MN = (h * func_minus_half(c_T, N, m - 1) / 8 -
+          tau * func_minus_half(kappa_T, N, m-1) / h +
+          h * tau * func_minus_half(alpha_x, N) / (4 * R))
+
+    PN = (h * func_minus_half(c_T, N, m - 1) * (T[m - 1][N] + T[m - 1][N - 1]) / 8 +
+          h * c_T(N, m - 1) * T[m - 1][N] / 4 +
+          alpha_x(N) * tau * T0 +
+          h * tau * (
+                F0_t(m - 1) * (k_T(N, m - 1) * exp_Tx(N, m - 1) + func_minus_half(k_T, N, m - 1) * func_minus_half(exp_Tx, N, m - 1)) +
+                2 * T0 * (func_minus_half(alpha_x, N) + alpha_x(N)) / R
+          ) / 4)
+    return {"K0": K0, "M0": M0, "P0": P0,
+            "KN": KN, "MN": MN, "PN": PN,}
+
+
+def count_coeffs(n, m):
+    A = tau * func_minus_half(kappa_T, n, m - 1) / h
+    D = tau * func_plus_half(kappa_T, n, m - 1) / h
+    B = h * c_T(n, m - 1) + A + D + 2 * h * tau * alpha_x(n) / R
+    F = h * c_T(n, m - 1) * T[m - 1][n] + h * tau * k_T(n, m - 1) * F0_t(m - 1) * exp_Tx(n, m - 1) + 2 * h * tau * T0 * alpha_x(n) / R
+    return {"A": A, "B": B, "D": D, "F": F}
 
 
 
-    P0 = h / 8 * func_plus_1_2(prevT[0], t, c) * (T[m - 1][0] + T[m - 1][1]) + \
-                        h / 4 * c(prevT[0]) * prevT[0] + \
-                        F0 * t + t * h / 8 * (3 * f(0) + f(h))
-
-    KN = h / 8 * func_minus_1_2(prevT[-1], t, c) + h / 4 * c(prevT[-1]) + \
-                        func_minus_1_2(prevT[-1], t, k) * t / h + t * alphaN + \
-                        t * h / 8 * p(l - h / 2) + t * h / 4 * p(l)
-
-    MN = h / 8 * func_minus_1_2(prevT[-1], t, c) - \
-                        func_minus_1_2(prevT[-1], t, k) * t / h + \
-                        t * h * p(l - h / 2) / 8
-
-    PN = h / 8 * func_minus_1_2(prevT[-1], t, c) * (prevT[-1] + prevT[-2]) + \
-                        h / 4 * c(prevT[-1]) * prevT[-1] + t * alphaN * T0 + \
-                        t * h / 4 * (f(l) + f(l - h / 2))
-
-
-
-
-
-
-
-
-
-#######
-def A(T):
-    return func_minus_1_2(T, t, k) * t / h
-
-def D(T):
-    return func_plus_1_2(T, t, k) * t / h
-
-def B(x, T):
-    return A(T) + D(T) + c(T) * h + p(x) * h * t
-
-def F(x, T):
-    return f(x) * h * t + c(T) * T * h
-
-def run_through(prevT):
-    K0 = h / 8 * func_plus_1_2(prevT[0], t, c) + h / 4 * c(prevT[0]) + \
-                        func_plus_1_2(prevT[0], t, k) * t / h + \
-                        t * h / 8 * p(h / 2) + t * h / 4 * p(0)
-
-    M0 = h / 8 * func_plus_1_2(prevT[0], t, c) - \
-                        func_plus_1_2(prevT[0], t, k) * t / h + \
-                        t * h * p(h / 2) / 8
-
-    P0 = h / 8 * func_plus_1_2(prevT[0], t, c) * (prevT[0] + prevT[1]) + \
-                        h / 4 * c(prevT[0]) * prevT[0] + \
-                        F0 * t + t * h / 8 * (3 * f(0) + f(h))
-
-    KN = h / 8 * func_minus_1_2(prevT[-1], t, c) + h / 4 * c(prevT[-1]) + \
-                        func_minus_1_2(prevT[-1], t, k) * t / h + t * alphaN + \
-                        t * h / 8 * p(l - h / 2) + t * h / 4 * p(l)
-
-    MN = h / 8 * func_minus_1_2(prevT[-1], t, c) - \
-                        func_minus_1_2(prevT[-1], t, k) * t / h + \
-                        t * h * p(l - h / 2) / 8
-
-    PN = h / 8 * func_minus_1_2(prevT[-1], t, c) * (prevT[-1] + prevT[-2]) + \
-                        h / 4 * c(prevT[-1]) * prevT[-1] + t * alphaN * T0 + \
-                        t * h / 4 * (f(l) + f(l - h / 2))
+# поступает m, и считаю ддля шага m, то есть начать с 1
+def count_T_array_for_time_m(m):
+    prevT = T[m - 1]
+    boundary_conditions = count_boundary_conditions(m)
 
     # Прямой ход
-    eps = [0, -M0 / K0]
-    eta = [0, P0 / K0]
+    ksi_array = [0, -boundary_conditions['M0'] / boundary_conditions["K0"]]
+    eta_array = [0, boundary_conditions['P0'] / boundary_conditions["K0"]]
 
-    x = h
-    n = 1
-    while (x + h < l):
-        eps.append(D(prevT[n]) / (B(x, prevT[n]) - A(prevT[n]) * eps[n]))
-        eta.append((F(x, prevT[n]) + A(prevT[n]) * eta[n]) / (B(x, prevT[n]) \
-                                                        - A(prevT[n]) * eps[n]))
-        n += 1
-        x += h
+    # x = h
+    # n = 1
+    for n in range(1, N):
+    #while (x + h < l):
+        cur_coeffs = count_coeffs(n, m)
+        ksi_array.append(cur_coeffs["D"] / (cur_coeffs["B"] - cur_coeffs["A"] * ksi_array[n]))
+        eta_array.append((cur_coeffs["F"] + cur_coeffs["A"] * eta_array[n]) /
+                         (cur_coeffs["B"] - cur_coeffs["A"] * ksi_array[n]))
+        # n += 1
+        # x += h
 
     # Обратный ход
-    y = [0] * (n + 1)
-    y[n] = (PN - MN * eta[n]) / (KN + MN * eps[n])
+    T_cur_array = [0] * N
+    T_cur_array[-1] = ((boundary_conditions['PN'] - boundary_conditions['MN'] * eta_array[N]) /
+             (boundary_conditions['KN'] + boundary_conditions['MN'] * ksi_array[N]))
 
-    for i in range(n - 1, -1, -1):
-        y[i] = eps[i + 1] * y[i + 1] + eta[i + 1]
+    for i in range(N - 2, -1, -1):
+        T_cur_array[i] = ksi_array[i + 1] * T_cur_array[i + 1] + eta_array[i + 1]
 
-    return y
+    return T_cur_array
+
 
 def check_eps(T, newT):
     for i, j in zip(T, newT):
