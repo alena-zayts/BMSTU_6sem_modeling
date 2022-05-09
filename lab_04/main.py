@@ -48,7 +48,8 @@ def func_minus_half(func, n, m=None):
 class Solver:
     # a2 = 2.049
     # b2 = 0.563e-3
-    def __init__(self, xmin=0, xmax=10, h=1e-2, tmin=0, tau=1, EPS=None, Fmax=50, tmax=60, a2=2.049, b2=0.563e-3, use_constant_F0t=False):
+    def __init__(self, xmin=0, xmax=10, h=1e-2, tmin=0, tau=1, EPS=None, Fmax=50, tmax=60, a2=2.049, b2=0.563e-3,
+                 use_constant_F0t=False, v=None):
         self.xmin = xmin
         self.xmax = xmax
         self.h = h
@@ -64,6 +65,9 @@ class Solver:
         self.a2 = a2
         self.b2 = b2
         self.use_constant_F0t = use_constant_F0t
+        self.v = v
+        if v and use_constant_F0t:
+            raise ValueError('v and use_constant_F0t simultaneously')
 
     # коэффициент теплопроводимости материала стержня
     def lambda_T(self, n, m):
@@ -93,6 +97,7 @@ class Solver:
 
     # !?
     # импульс излучения
+
     def F0_t(self, m):
         if self.use_constant_F0t:
             if m < self.use_constant_F0t['stop_hitting']:
@@ -101,6 +106,22 @@ class Solver:
                 return 0
 
         t = self.tmin + self.tau * m
+
+        if self.v:
+            if self.v < 1:
+                raise ValueError('v<1')
+            # Импульсы следуют один за другим с заданной частотой v
+            # (частота определяется количеством импульсов в 1 секунду).
+            here_eps = 1e-6
+            imp_each_part = 1 / self.v if self.v != 1 else 0
+            float_part_of_cur_time = t % 1
+            for i in range(self.v): # 1/3 2/3 3/3
+                if abs(float_part_of_cur_time - imp_each_part * i) < here_eps:
+                    #print(f'!!!!!! for m={m}')
+                    return self.Fmax * t * exp(-(t / self.tmax - 1)) / self.tmax
+            # значит  время неподходящее
+            return 0
+
         return self.Fmax * t * exp(-(t / self.tmax - 1)) / self.tmax
         # return Fmax * t_array[m] * exp(-(t_array[m] / tmax - 1)) / tmax
 
@@ -126,8 +147,8 @@ class Solver:
                 iterations_counter += 1
                 if DEBUG:
                     print(f"Iteration {iterations_counter}")
-                if iterations_counter > 1:
-                    print('wow, iteration > 1', iterations_counter)
+                # if iterations_counter > 1:
+                #     print('wow, iteration > 1', iterations_counter)
                 T_m_prev_iteration = self.T[-1]
                 T_m_cur_iteration = self.count_T_array_for_time_m(m)
                 self.T[-1] = T_m_cur_iteration
@@ -201,6 +222,9 @@ class Solver:
               ) / 4)
 
         self.N += 1
+
+        MN, KN = KN, MN
+        M0, K0 = K0, M0
         return {"K0": K0, "M0": M0, "P0": P0,
                 "KN": KN, "MN": MN, "PN": PN,}
 
@@ -248,7 +272,7 @@ class Solver:
             return len(self.T) > self.use_constant_F0t['stop_timing']
         T_array_prev, T_array_new = self.T[-2], self.T[-1]
         for T_prev, T_cur in zip(T_array_prev, T_array_new):
-            if abs((T_prev - T_cur) / T_cur) > 10e-4:
+            if abs((T_prev - T_cur) / T_cur) > 1e-4:
                 return False
         return True
 
@@ -363,8 +387,8 @@ class Solver:
 
 def study_steps():
     print('research')
-    h_array = [1, 0.5, 0.1, 0.01, 0.001]
-    tau_array = [1, 0.5, 0.1]
+    h_array = [0.01, 0.001, 0.0001]
+    tau_array = [1, 0.5]
     results = pd.DataFrame(columns=['h', 'tau', 'balanced', 'M', 'counted'])
     for h in h_array:
         for tau in tau_array:
@@ -373,7 +397,7 @@ def study_steps():
             T, t_array = solver.get_results()
             balanced, counted = solver.check_steps_ok()
             print(f'h={h}, tau={tau}, balanced={balanced}, M={len(t_array)}, counted={counted}')
-            results = results.append({'h':h, 'tau': tau, 'balanced': balanced, 'M': len(t_array), 'counted': counted}, ignore_index=True)
+            results = results.append({'h': h, 'tau': tau, 'balanced': balanced, 'M': len(t_array), 'counted': counted}, ignore_index=True)
     print(results)
     results.to_excel('study_steps.xls')
 
@@ -494,17 +518,43 @@ def test_with_constant_F0_t():
     solver.solve()
     solver.show_results()
     #solver.print_results()
-    print(solver.check_steps_ok())
+
+
+def study4_impuls():
+    print('research impuls')
+    v_array = [1, 10, 20]
+    fig = plt.figure(figsize=(14, 9))
+
+    for i, v in enumerate(v_array):
+        title = f"v={v}"
+        plt.subplot(1, len(v_array), i + 1)
+
+        solver = Solver(v=v, h=1e-2, tau=1e-2)
+        solver.solve()
+        T, t_array = solver.get_results()
+        print(len(T), len(T[0]))
+
+        T_0t = [T_m[0] for T_m in T]
+        plt.xticks(list(range(0, 100, 10)))
+        plt.plot(t_array, T_0t, label=title)
+        plt.legend()
+
+        print(f'v={v}, T_0t={T_0t}')
+
+    plt.savefig(f"v.png")
+    plt.show()
+
+
 
 
 def main():
-    # solver = Solver(h=0.0001)
+    # solver = Solver()
     # solver.solve()
     # solver.show_results()
     # #solver.print_results()
     # print(solver.check_steps_ok())
 
-    #study_steps()
+    # study_steps()
 
 
     # OK
@@ -514,7 +564,9 @@ def main():
     # study5_Ftmax()
 
     # SUPER OK
-    test_with_constant_F0_t()
+    # test_with_constant_F0_t()
+
+    study4_impuls()
 
 
 
