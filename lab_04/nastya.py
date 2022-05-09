@@ -16,7 +16,7 @@ l = 10
 T0 = 300
 R = 0.5
 F0 = 50
-h = 0.01
+h = 0.1
 t = 1
 
 def k(T):
@@ -126,7 +126,10 @@ def iter_method():
 
     while (True):
         buf = T
+        q=0
         while True:
+            q+=1
+            print(q)
             newT = run_through(buf)
             if check_iter(buf, newT):
                 break

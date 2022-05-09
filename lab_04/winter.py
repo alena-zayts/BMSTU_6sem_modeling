@@ -136,7 +136,10 @@ def simple_iter():
 
     while True:
         T_prev = T
+        q=0
         while True:
+            q+=1
+            print(q)
             T_new = get_T_new(T_prev)
 
             cur_max = fabs((T[0] - T_new[0]) / T_new[0])
