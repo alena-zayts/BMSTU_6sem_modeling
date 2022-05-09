@@ -5,7 +5,7 @@ import sys
 import os
 import numpy as np
 
-EPS = 1e-4
+EPS = 1e-8
 c = 3e10
 k0 = 8e-3  # k0 = 0.01 # k0 = 0.008
 m = 0.786
@@ -19,16 +19,14 @@ p = 4
 z_min = 0
 z_max = 1
 
-h = 1e-2
-
+h = 1e-4
+show_each = 1
 
 def T(z):
     return (Tw - T0) * (z ** p) + T0
 
 
 def up(z):
-    if z > 1:
-        print(z, 3.084e-4 / (exp(4.799e4 / T(z)) - 1))
     return 3.084e-4 / (exp(4.799e4 / T(z)) - 1)
 
 
@@ -47,6 +45,9 @@ class Solver:
         self.h = h
         self.z_array = list(np.arange(z_min, z_max + EPS, h))
         self.zF_array = [z_min] + list(np.arange(z_min + h / 2, z_max, h)) + [z_max]
+        # # !!!
+        # from copy import deepcopy
+        # self.zF_array = deepcopy(self.z_array)
         self.N = len(self.z_array)# -1
         self.z_array.append(z_max + h)
         self.F0 = F0
@@ -85,9 +86,9 @@ class Solver:
         # self.ksi_array[-1] = 0
         # self.eta_array[-1] = 1e-6
 
-        print(f'ksi {len(self.ksi_array)}: {self.ksi_array}')
-        print(f'eta {len(self.eta_array)}: {self.eta_array}')
-        print(self.N)
+        # print(f'ksi {len(self.ksi_array)}: {self.ksi_array}')
+        # print(f'eta {len(self.eta_array)}: {self.eta_array}')
+
 
 
     def bacward(self):
@@ -104,83 +105,109 @@ class Solver:
         # x2 = (self.PN - self.MN * self.eta_array[-1]) / (self.MN * self.ksi_array[-1] + self.KN)
         # x3 = 5.075848e-07
 
-        self.y_array[-1] = (self.PN - self.KN * self.eta_array[-1]) / (self.KN * self.ksi_array[-1] + self.MN)
+        self.y_array[-1] = (self.PN - self.MN * self.eta_array[-1]) / (self.MN * self.ksi_array[-1] + self.KN)
         for i in range(self.N - 1 - 1, -1, -1):
             # self.y_array[i] = self.ksi_array[i + 1] * self.y_array[i + 1] + self.eta_array[i + 1]
             self.y_array[i] = self.ksi_array[i] * self.y_array[i + 1] + self.eta_array[i]
             # print(f'i={i}, y[i]= {self.ksi_array[i]} * {self.y_array[i + 1]} + {self.eta_array[i]}')
 
     def count_coeffs(self):
-        def count_M0():
-            sum1 = self.z_n_plus_half(0) * self.kappa_n_plus_half(0) / (R * R * self.h)
-            sum2 = self.h * self.p_n_plus_half(0) * self.V_n_one_halph() / 8
-            sum3 = self.h * self.p_func(self.z_array[0]) * self.V_n_one_halph() / 4
-            return -(sum1 + sum2 + sum3)
+        # def count_M0():
+        #     sum1 = self.z_n_plus_half(0) * self.kappa_n_plus_half(0) / (R * R * self.h)
+        #     sum2 = self.h * self.p_n_plus_half(0) * self.V_n_one_halph() / 8
+        #     sum3 = self.h * self.p_func(self.z_array[0]) * self.V_n_one_halph() / 4
+        #     return -(sum1 + sum2 + sum3)
+        #
+        # def count_K0():
+        #     sum1 = self.z_n_plus_half(0) * self.kappa_n_plus_half(0) / (R * R * self.h)
+        #     sum2 = self.h * self.p_n_plus_half(0) * self.V_n_one_halph() / 8
+        #     return sum1 - sum2
+        #
+        # def count_P0():
+        #     sum1 = self.z_array[0] * self.F0 / R
+        #     sum2 = self.h * self.V_n_one_halph() * (self.f_func(self.z_array[0]) + self.f_n_plus_half(0)) / 4
+        #     return -(sum1 + sum2)
 
         def count_K0():
-            sum1 = self.z_n_plus_half(0) * self.kappa_n_plus_half(0) / (R * R * self.h)
-            sum2 = self.h * self.p_n_plus_half(0) * self.V_n_one_halph() / 8
-            return sum1 - sum2
+            return -self.kappa_n_plus_half(0) * self.z_n_plus_half(0) + c * R * h * h / 8 * k(self.z_n_plus_half(0)) * self.z_n_plus_half(0)
+
+        def count_M0():
+            return self.kappa_n_plus_half(0) * self.z_n_plus_half(0) + c * R * h * h / 8 * k(self.z_n_plus_half(0)) * self.z_n_plus_half(0)
 
         def count_P0():
-            sum1 = self.z_array[0] * self.F0 / R
-            sum2 = self.h * self.V_n_one_halph() * (self.f_func(self.z_array[0]) + self.f_n_plus_half(0)) / 4
-            return -(sum1 + sum2)
+            return c * R * h * h / 4 * k(self.z_n_plus_half(0)) * up(self.z_n_plus_half(0)) * self.z_n_plus_half(0)
 
-        def count_KN():
-            sum1 = self.z_n_minus_half(self.N) * self.kappa_n_minus_half(self.N) / (R * R * self.h)
-            sum2 = self.h * self.p_n_minus_half(self.N) * self.V_N_minus_half() / 8
-            return (sum1 - sum2)
+        # def count_KN():
+        #     sum1 = self.z_n_minus_half(self.N) * self.kappa_n_minus_half(self.N) / (R * R * self.h)
+        #     sum2 = self.h * self.p_n_minus_half(self.N) * self.V_N_minus_half() / 8
+        #     return (sum1 - sum2)
+
+        # def count_MN():
+        #     sum1 = self.z_n_minus_half(self.N) * self.kappa_n_minus_half(self.N) / (R * R * self.h)
+        #     sum2 = self.z_array[self.N] * self.alpha / R
+        #     sum3 = self.h * self.p_n_minus_half(self.N) * self.V_N_minus_half() / 8
+        #     sum4 = self.h * self.p_func(self.z_array[self.N]) * self.V_N_minus_half() / 4
+        #     return -(sum1 + sum2 + sum3 + sum4)
+
+        # def count_PN():
+        #     sum1 = self.z_array[self.N] * self.alpha * self.beta / R
+        #     # sum1 = 0  # betta = 0
+        #     sum2 = (self.h * self.V_N_minus_half() *
+        #             (self.f_func(self.z_array[self.N]) + self.f_n_minus_half(self.N)) / 4)
+        #     return -(sum1 + sum2)
 
         def count_MN():
-            sum1 = self.z_n_minus_half(self.N) * self.kappa_n_minus_half(self.N) / (R * R * self.h)
-            sum2 = self.z_array[self.N] * self.alpha / R
-            sum3 = self.h * self.p_n_minus_half(self.N) * self.V_N_minus_half() / 8
-            sum4 = self.h * self.p_func(self.z_array[self.N]) * self.V_N_minus_half() / 4
-            return -(sum1 + sum2 + sum3 + sum4)
+            return -self.kappa_n_minus_half(self.N) * self.z_n_minus_half(self.N) + R * c * h * h / 8 * k(self.z_n_minus_half(self.N)) * self.z_n_minus_half(self.N)
+
+        def count_KN():
+            return self.kappa_n_minus_half(self.N) * self.z_n_minus_half(self.N) + m * c * h / 2 + R * c * h * h / 8 * k(self.z_n_minus_half(self.N)) + R * c * h * h / 4 * k(z_max)
 
         def count_PN():
-            sum1 = self.z_array[self.N] * self.alpha * self.beta / R
-            # sum1 = 0  # betta = 0
-            sum2 = (self.h * self.V_N_minus_half() *
-                    (self.f_func(self.z_array[self.N]) + self.f_n_minus_half(self.N)) / 4)
-            return -(sum1 + sum2)
+            return c * R * h * h / 4 * (k(self.z_n_minus_half(self.N)) * up(self.z_n_minus_half(self.N)) * self.z_n_minus_half(self.N) + k(z_max) * up(z_max))
+
+        # MN = -kappa(z_half) * z_half + r * c * h * h / 8 * k(z_half) * z_half
+        # KN =  kappa(z_half) * z_half + m * c * h / 2 + r * c * h * h / 8 * k(z_half) * z_half + r * c * h * h / 4 * k(1)
+        # PN = c * r * h * h / 4 * (k(z_half) * u_p(z_half) * z_half + k(1) * u_p(1))
+        # y[-1] = (PN - MN * etha[-1]) / (MN * xi[-1] + KN)
 
         self.M0 = count_M0()
         self.K0 = count_K0()
         self.P0 = count_P0()
 
-        # self.N -= 1
+        self.N -= 1
         self.MN = count_MN()
         self.KN = count_KN()
         self.PN = count_PN()
-        # self.N += 1
+        self.N += 1
 
     def count_F_array(self):
         self.F_array = [self.F0]
         for n in range(self.N - 1):
-            F_plus_half = self.kappa_n_plus_half(n) * (self.y_array[n] - self.y_array[n + 1]) / (R * self.h) # ?R
+            F_plus_half = self.kappa_n_plus_half(n) * (self.y_array[n] - self.y_array[n + 1]) / (self.h) # ?R
             self.F_array.append(F_plus_half)
 
         self.F_array.append(self.alpha * (self.y_array[-1] - self.beta))
 
     def count_F_array_by_div(self):
-        self.F_div_array = [self.F0]
+        y = self.y_array
+        dy = []
+        dy.append((-3 * y[0] + 4 * y[1] - y[2]) / 2 / h)
+        for i in range(1, len(y) - 1):
+            dy.append((y[i + 1] - y[i - 1]) / 2 / h)
+        dy.append((3 * y[-1] - 4 * y[-2] + y[-3]) / 2 / h)
+        f = [-c / 3 / R / k(self.z_array[i]) * dy[i] for i in range(len(self.z_array) - 1)]
+        f[0] = 0
+        self.F_div_array = f
 
-        z0 = self.z_array[0]
-        y0 = self.y_array[0]
-
-        for i in range(1, len(self.z_array) - 1):
-            zn = self.z_array[i]
-            yn = self.y_array[i]
-            sum1 = self.f_func(zn) + self.f_func(z0)
-            sum2 = self.p_func(zn) * yn + self.p_func(z0) * y0
-            F0 = R * zn * (sum1 - sum2) / 2
-            self.F_div_array.append(F0)
-
-        # !!!
-        # self.F_div_array.append(F0)
-        self.F_div_array.append(self.alpha * (self.y_array[-1] - self.beta))
+        # self.F_div_array = [self.F0]
+        #
+        # for i in range(1, len(self.y_array) - 1):
+        #     F0 = (self.y_array[i + 1] - self.y_array[i - 1]) / (2 * h)
+        #     F0 = (self.f_func(self.z_array[i + 1]) - self.f_func(self.z_array[i - 1])) / (2 * h)
+        #     F0 = self.f_func(self.z_array[i]) * (self.y_array[i + 1] - self.y_array[i - 1]) / (2 * h)
+        #     self.F_div_array.append(F0)
+        #
+        # self.F_div_array.append(self.alpha * (self.y_array[-1] - self.beta))
 
     def count_div_F(self):
         self.div_F_array = []
@@ -230,26 +257,42 @@ class Solver:
     def Vn(self, n):
         return (self.z_n_plus_half(n) ** 2 - self.z_n_minus_half(n) ** 2) / 2
 
+    # def An(self, n):
+    #     return (self.z_n_minus_half(n) * self.kappa_n_minus_half(n)) / (R * R * self.h)
+    #
+    # def Cn(self, n):
+    #     return (self.z_n_plus_half(n) * self.kappa_n_plus_half(n)) / (R * R * self.h)
+    #
+    # def Bn(self, n):
+    #     return self.An(n) + self.Cn(n) + self.p_func(self.z_array[n]) * self.Vn(n)
+    #
+    # def Dn(self, n):
+    #     return self.f_func(self.z_array[n]) * self.Vn(n)
+
     def An(self, n):
-        return (self.z_n_minus_half(n) * self.kappa_n_minus_half(n)) / (R * R * self.h)
+        return (self.z_n_minus_half(n) * self.kappa_n_minus_half(n))
 
     def Cn(self, n):
-        return (self.z_n_plus_half(n) * self.kappa_n_plus_half(n)) / (R * R * self.h)
+        return (self.z_n_plus_half(n) * self.kappa_n_plus_half(n))
 
     def Bn(self, n):
-        return self.An(n) + self.Cn(n) + self.p_func(self.z_array[n]) * self.Vn(n)
+        x1 = self.An(n) + c * k(self.z_array[n]) * self.z_array[n] * h * h * R
+        x2 = self.Cn(n)
+        return self.An(n) + c * k(self.z_array[n]) * self.z_array[n] * h * h * R + self.Cn(n)
 
-    def Dn(self, n):
-        return self.f_func(self.z_array[n]) * self.Vn(n)
+    # def Dn(self, n):
+    #     return self.f_func(self.z_array[n]) * self.Vn(n)
+
+    def Fn(self, n):
+        return self.f_func(self.z_array[n]) * self.z_array[n] * h * h * R
 
 
-
-
+    # -1?
     def ksi_n_plus_1(self, n):
         return self.Cn(n) / (self.Bn(n) - self.An(n) * self.ksi_array[n - 1])
 
     def eta_n_plus_1(self, n):
-        return (self.Dn(n) + self.An(n) * self.eta_array[n - 1]) / (self.Bn(n) - self.An(n) * self.ksi_array[n - 1])
+        return (self.Fn(n) + self.An(n) * self.eta_array[n - 1]) / (self.Bn(n) - self.An(n) * self.ksi_array[n - 1])
 
 
 
@@ -279,11 +322,11 @@ def process_results(z, zF, u, F, F_div, div):
         table['F_div'] = F_div_pd
         table = table.set_index('z')
 
-        show_each = 1
+
         pd.set_option('display.max_rows', None)
         pd.set_option('display.max_columns', None)
         pd.set_option('display.max_colwidth', None)
-        pd.options.display.float_format = '{:,.1e}'.format
+        pd.options.display.float_format = '{:,.9e}'.format
         print(table.iloc[::show_each, :])
         print('\n\n\n')
 
@@ -293,7 +336,7 @@ def process_results(z, zF, u, F, F_div, div):
 
     fig = plt.figure(figsize=(12, 7))
 
-    plt.subplot(1, 4, 1)
+    plt.subplot(2, 2, 1)
     plt.plot(z, u, '-', label='u(z)')
 
     ups = list(map(lambda z0: up(z0), z))
@@ -302,19 +345,19 @@ def process_results(z, zF, u, F, F_div, div):
     plt.xlabel('z')
     plt.grid()
 
-    plt.subplot(1, 4, 2)
-    plt.plot(zF, F, '--', label='F(z)')
+    plt.subplot(2, 2, 2)
+    plt.plot(zF, F, '--', label='F(z) (int)')
     plt.legend()
     plt.xlabel('z')
     plt.grid()
 
-    plt.subplot(1, 4, 3)
-    plt.plot(zF, F_div, '--', label='F_div(z)')
+    plt.subplot(2, 2, 3)
+    plt.plot(zF[:-1], F_div, '--', label='F(z) (dif')
     plt.legend()
     plt.xlabel('z')
     plt.grid()
 
-    plt.subplot(1, 4, 4)
+    plt.subplot(2, 2, 4)
     plt.plot(z, div, '--', label='divF')
     plt.legend()
     plt.xlabel('z')
