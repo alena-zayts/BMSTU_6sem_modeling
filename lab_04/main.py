@@ -1,9 +1,13 @@
-from math import exp
+from math import exp, ceil
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import scipy
 import time
+
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_colwidth', None)
 
 DEBUG = False
 DEBUG2 = False
@@ -49,8 +53,8 @@ def func_minus_half(func, n, m=None):
 class Solver:
     # a2 = 2.049
     # b2 = 0.563e-3
-    def __init__(self, xmin=0, xmax=10, h=1e-2, tmin=0, tau=1, EPS=None, Fmax=50, tmax=60, a2=2.049, b2=0.563e-3,
-                 use_constant_F0t=False, v=None):
+    def __init__(self, xmin=0, xmax=10, h=0.01, tmin=0, tau=0.5, EPS=None, Fmax=50, tmax=60, a2=2.049, b2=0.563e-3,
+                 use_constant_F0t=None, v=None):
         self.xmin = xmin
         self.xmax = xmax
         self.h = h
@@ -67,6 +71,12 @@ class Solver:
         self.b2 = b2
         self.use_constant_F0t = use_constant_F0t
         self.v = v
+        if v:
+            self.period_by_m = round(1 / (v['v'] * tau))
+            if self.period_by_m <= 1:
+                self.period_by_m = 1
+                print('WARNING, it is not periodical')
+
         if v and use_constant_F0t:
             raise ValueError('v and use_constant_F0t simultaneously')
 
@@ -106,25 +116,25 @@ class Solver:
             else:
                 return 0
 
+        if self.v and (m % self.period_by_m) != 1:
+                return 0
+
+            # if self.v < 1:
+            #     raise ValueError('v<1')
+            # # Импульсы следуют один за другим с заданной частотой v
+            # # (частота определяется количеством импульсов в 1 секунду).
+            # here_eps = 1e-6
+            # imp_each_part = 1 / self.v if self.v != 1 else 0
+            # float_part_of_cur_time = t % 1
+            # for i in range(self.v): # 1/3 2/3 3/3
+            #     if abs(float_part_of_cur_time - imp_each_part * i) < here_eps:
+            #         #print(f'!!!!!! for m={m}')
+            #         return self.Fmax * t * exp(-(t / self.tmax - 1)) / self.tmax
+            # # значит  время неподходящее
+            # return 0
+
         t = self.tmin + self.tau * m
-
-        if self.v:
-            if self.v < 1:
-                raise ValueError('v<1')
-            # Импульсы следуют один за другим с заданной частотой v
-            # (частота определяется количеством импульсов в 1 секунду).
-            here_eps = 1e-6
-            imp_each_part = 1 / self.v if self.v != 1 else 0
-            float_part_of_cur_time = t % 1
-            for i in range(self.v): # 1/3 2/3 3/3
-                if abs(float_part_of_cur_time - imp_each_part * i) < here_eps:
-                    #print(f'!!!!!! for m={m}')
-                    return self.Fmax * t * exp(-(t / self.tmax - 1)) / self.tmax
-            # значит  время неподходящее
-            return 0
-
         return self.Fmax * t * exp(-(t / self.tmax - 1)) / self.tmax
-        # return Fmax * t_array[m] * exp(-(t_array[m] / tmax - 1)) / tmax
 
     def solve(self):
         self.x_array = list(np.arange(self.xmin, self.xmax + self.EPS, self.h))
@@ -137,6 +147,8 @@ class Solver:
 
         m = 1
         while True:
+            if m % 100 == 0:
+                print('m (by t) =', m)
             if DEBUG:
                 print(f"\n\nStart counting for time {m} ({self.t_array[-1] + self.tau})")
             #print(f"\n\nStart counting for time {m} ({self.t_array[-1] + self.tau})")
@@ -194,17 +206,18 @@ class Solver:
               self.tau * func_plus_half(self.kappa_T, 0, m-1) / self.h +
               self.h * self.tau * func_plus_half(self.alpha_x, 0) / (4 * R))
 
-        p1 = self.h * func_plus_half(self.c_T, 0, m - 1) * (self.T[m - 1][0] + self.T[m - 1][1]) / 8
-        p2 = self.h * self.c_T(0, m - 1) * self.T[m - 1][0] / 4
-        p3 =  self.alpha_x(0) * self.tau * T0
-        p4 = (self.h * self.tau / 4 ) * (2 * T0 * (func_plus_half(self.alpha_x, 0) + self.alpha_x(0)) / R)
-        p5 = (self.h * self.tau / 4 ) * self.F0_t(m - 1) * self.k_T(0, m - 1) * self.exp_Tx(0, m - 1)
-        p6 = (self.h * self.tau / 4 ) * self.F0_t(m - 1) * func_plus_half(self.k_T, 0, m - 1) * func_plus_half(self.exp_Tx, 0, m - 1)
+        # p1 = self.h * func_plus_half(self.c_T, 0, m - 1) * (self.T[m - 1][0] + self.T[m - 1][1]) / 8
+        # p2 = self.h * self.c_T(0, m - 1) * self.T[m - 1][0] / 4
+        # p3 =  self.alpha_x(0) * self.tau * T0
+        # p4 = (self.h * self.tau / 4 ) * (2 * T0 * (func_plus_half(self.alpha_x, 0) + self.alpha_x(0)) / R)
+        # p5 = (self.h * self.tau / 4 ) * self.F0_t(m - 1) * self.k_T(0, m - 1) * self.exp_Tx(0, m - 1)
+        # p6 = (self.h * self.tau / 4 ) * self.F0_t(m - 1) * func_plus_half(self.k_T, 0, m - 1) * func_plus_half(self.exp_Tx, 0, m - 1)
+        correct_exp_one_half = exp(-func_plus_half(self.k_T, 0, m - 1) * (self.x_array[0] + self.x_array[1]) / 2)
         P0 = (self.h * func_plus_half(self.c_T, 0, m - 1) * (self.T[m - 1][0] + self.T[m - 1][1]) / 8 +
               self.h * self.c_T(0, m - 1) * self.T[m - 1][0] / 4 +
               self.alpha_x(0) * self.tau * T0 +
               self.h * self.tau * (
-                    self.F0_t(m - 1) * (self.k_T(0, m - 1) * self.exp_Tx(0, m - 1) + func_plus_half(self.k_T, 0, m - 1) * func_plus_half(self.exp_Tx, 0, m - 1)) +
+                    self.F0_t(m - 1) * (self.k_T(0, m - 1) * self.exp_Tx(0, m - 1) + func_plus_half(self.k_T, 0, m - 1) * correct_exp_one_half) +
                     2 * T0 * (func_plus_half(self.alpha_x, 0) + self.alpha_x(0)) / R
               ) / 4)
 
@@ -220,18 +233,20 @@ class Solver:
               self.tau * func_minus_half(self.kappa_T, self.N, m-1) / self.h +
               self.h * self.tau * func_minus_half(self.alpha_x, self.N) / (4 * R))
 
+        correct_exp_one_half = exp(-func_minus_half(self.k_T, self.N, m - 1) * (self.x_array[self.N] + self.x_array[self.N - 1]) / 2)
+        func_minus_half(self.exp_Tx, self.N, m - 1)
         PN = (self.h * func_minus_half(self.c_T, self.N, m - 1) * (self.T[m - 1][self.N] + self.T[m - 1][self.N - 1]) / 8 +
               self.h * self.c_T(self.N, m - 1) * self.T[m - 1][self.N] / 4 +
               self.alpha_x(self.N) * self.tau * T0 +
               self.h * self.tau * (
-                    self.F0_t(m - 1) * (self.k_T(self.N, m - 1) * self.exp_Tx(self.N, m - 1) + func_minus_half(self.k_T, self.N, m - 1) * func_minus_half(self.exp_Tx, self.N, m - 1)) +
+                    self.F0_t(m - 1) * (self.k_T(self.N, m - 1) * self.exp_Tx(self.N, m - 1) + func_minus_half(self.k_T, self.N, m - 1) * correct_exp_one_half) +
                     2 * T0 * (func_minus_half(self.alpha_x, self.N) + self.alpha_x(self.N)) / R
               ) / 4)
 
         self.N += 1
 
-        MN, KN = KN, MN
-        M0, K0 = K0, M0
+        # MN, KN = KN, MN
+        # M0, K0 = K0, M0
         return {"K0": K0, "M0": M0, "P0": P0,
                 "KN": KN, "MN": MN, "PN": PN,}
 
@@ -243,7 +258,12 @@ class Solver:
         A = self.tau * func_minus_half(self.kappa_T, n, m - 1) / self.h
         D = self.tau * func_plus_half(self.kappa_T, n, m - 1) / self.h
         B = self.h * self.c_T(n, m - 1) + A + D + 2 * self.h * self.tau * self.alpha_x(n) / R
-        F = self.h * self.c_T(n, m - 1) * self.T[m - 1][n] + self.h * self.tau * self.k_T(n, m - 1) * self.F0_t(m - 1) * self.exp_Tx(n, m - 1) + 2 * self.h * self.tau * T0 * self.alpha_x(n) / R
+        sum1 = self.h * self.c_T(n, m - 1) * self.T[m - 1][n]
+        sum2 = self.h * self.tau * self.k_T(n, m - 1) * self.F0_t(m - 1) * self.exp_Tx(n, m - 1)
+        sum3 = 2 * self.h * self.tau * T0 * self.alpha_x(n) / R
+        F = self.h * self.c_T(n, m - 1) * self.T[m - 1][n] + \
+            self.h * self.tau * self.k_T(n, m - 1) * self.F0_t(m - 1) * self.exp_Tx(n, m - 1) + \
+            2 * self.h * self.tau * T0 * self.alpha_x(n) / R
         return {"A": A, "B": B, "D": D, "F": F}
 
     def count_T_array_for_time_m(self, m):
@@ -285,7 +305,9 @@ class Solver:
 
     def stop_timing(self):
         if self.use_constant_F0t:
-            return len(self.T) > self.use_constant_F0t['stop_timing']
+            return len(self.T) * self.tau > self.use_constant_F0t['stop_timing']
+        if self.v:
+            return len(self.T) * self.tau > self.v['stop_timing']
         T_array_prev, T_array_new = self.T[-2], self.T[-1]
         for T_prev, T_cur in zip(T_array_prev, T_array_new):
             if abs((T_prev - T_cur) / T_cur) > 1e-4:
@@ -302,16 +324,11 @@ class Solver:
 
 
 
-    def print_results(self):
-        print(self.t_array)
-        print(self.x_array)
-        for row in self.T:
-            print(row)
-
-        columns = [f'{t}' for t in self.t_array]
-        table = pd.DataFrame(columns=columns, index=self.x_array)
-        for i in range(len(self.t_array)):
-            table[f'{self.t_array[i]}'] = self.T[i]
+    def print_results(self, add_str=''):
+        columns = [f'{x}' for x in range(int(self.xmax))]
+        table = pd.DataFrame(index=self.t_array)
+        for i in range(0, len(self.x_array), int(len(self.x_array) // self.xmax)):
+            table[f'{self.x_array[i]}'] = [Tm[i] for Tm in self.T]
 
         # table = table.set_index('z')
 
@@ -319,12 +336,11 @@ class Solver:
         pd.set_option('display.max_columns', None)
         pd.set_option('display.max_colwidth', None)
         pd.options.display.float_format = '{:,.9e}'.format
-        show_each = 1
-        print(table.iloc[::show_each, :])
-        print('\n\n\n')
-        table.to_excel('result.xls')
 
-    def show_results(self):
+        table.to_excel(f'{add_str}result.xls')
+
+
+    def show_results(self, add_str=''):
         M = len(self.T)# обрезаем неинтересную часть графика
 
         # Трехмерный
@@ -337,7 +353,7 @@ class Solver:
         plt.xlabel("t, c")
         plt.ylabel("x, см")
         fig_3d.show()
-        plt.savefig(f'3d.png')
+        plt.savefig(f'{add_str}3d.png')
 
         # Проекции
         fig, (first_graph, second_graph) = plt.subplots(
@@ -347,22 +363,24 @@ class Solver:
         # Первая cm - K
         step_by_time = int(len(self.T) / 10) + 1
         for T_m in self.T[len(self.T) - 1:0:-step_by_time]:
-            first_graph.plot(self.x_array, T_m)
+            first_graph.plot(self.x_array, T_m, label=f't={self.t_array[self.T.index(T_m)]}')
         first_graph.set_xlabel("x, cm")
         first_graph.set_ylabel("T, K")
+        plt.legend()
         first_graph.grid()
 
         # Вторая sec - K
         step_by_cm = int(len(self.x_array) / 10)
         for i in range(0, len(self.x_array), step_by_cm):
             line = [T_m[i] for T_m in self.T]
-            second_graph.plot(self.t_array, line)
+            second_graph.plot(self.t_array, line, label=f'{self.x_array[i]}')
 
         second_graph.set_xlabel("t, sec")
         second_graph.set_ylabel("T, K")
         second_graph.grid()
+        plt.legend()
         fig.show()
-        plt.savefig(f'2d.png')
+        plt.savefig(f'{add_str}2d.png')
         print()
 
     def check_steps_ok(self):
@@ -401,21 +419,30 @@ class Solver:
 
 
 
-def study_steps():
-    print('research')
-    h_array = [0.01, 0.001, 0.0001]
-    tau_array = [1, 0.5]
-    results = pd.DataFrame(columns=['h', 'tau', 'balanced', 'M', 'counted'])
+def study2_steps():
+    # tau=0.5, h = 0.01
+    h_array = [1, 10, 100, 1000]  # 1/h
+    tau_array = [1, 0.5, 0.1]
+    x_array = list(np.arange(0, 10 + 1e-4, 1))
+    results = pd.DataFrame(columns=['h', 'tau', 'h * tau', 'balanced', 'M', 'counted_dif', ] + [f'x={x}' for x in x_array])
+
     for h in h_array:
         for tau in tau_array:
-            solver = Solver(h=h, tau=tau)
+            solver = Solver(h=1/h, tau=tau)
             solver.solve()
             T, t_array = solver.get_results()
+            T_last = T[-1]
             balanced, counted = solver.check_steps_ok()
-            print(f'h={h}, tau={tau}, balanced={balanced}, M={len(t_array)}, counted={counted}')
-            results = results.append({'h': h, 'tau': tau, 'balanced': balanced, 'M': len(t_array), 'counted': counted}, ignore_index=True)
-    print(results)
-    results.to_excel('study_steps.xls')
+            row_pd = {'h': 1/h, 'tau': tau, 'h * tau': tau/h, 'balanced': balanced, 'M': len(t_array), 'counted_dif': counted}
+            print(row_pd)
+            row_pd.update({f'x={x_array[i]}': T_last[i * h] for i in range(len(x_array))})
+            results = results.append(row_pd, ignore_index=True)
+    results = results.sort_values(by=['h * tau', 'tau', 'h'], axis=0, ascending=False)
+    try:
+        results.to_excel('study_steps.xls')
+    except:
+        results.to_excel('study_steps2.xls')
+
 
 
 # График зависимости температуры T(0,t) от a2, b2
@@ -428,31 +455,55 @@ def study3_ab():
     # 2 значения -- по условию
     a2_array = [1, 2.049, 3, 5]
     b2_array = [0.1e-3, 0.563e-3, 0.6e-2]
-    q=0
     fig = plt.figure(figsize=(14, 9))
-
 
     for i, a2 in enumerate(a2_array):
         for j, b2 in enumerate(b2_array):
-            title = f"{q} a2={a2} b2={b2}"
+            title = f"a2={a2} b2={b2}"
             plt.subplot(len(a2_array), len(b2_array), i * len(b2_array) + j + 1)
-            q+=1
 
             solver = Solver(a2=a2, b2=b2)
             solver.solve()
             T, t_array = solver.get_results()
 
             T_0t = [T_m[0] for T_m in T]
-            plt.xticks(list(range(0, 100, 10)))
+            plt.xticks(t_array[::len(t_array) / 10])
             plt.plot(t_array, T_0t, label=title)
             plt.legend()
 
             print(f'a2={a2}, b2={b2}, T_0t={T_0t}')
 
-            #plt.title(title)
-
-
     plt.savefig(f"a2b2.png")
+    plt.show()
+
+
+# в 1 бьет
+def study4_impuls():
+    in_row = 3
+    stop_timing = 600
+    print('research impuls')
+    v_array = [5, 3, 1, 0.1, 0.01]
+    v_array = [0.01, 0.05, 0.1, 1, 3, 5] # больше низя
+    fig = plt.figure(figsize=(14, 9))
+
+    for i, v in enumerate(v_array):
+        title = f"v={v}"
+        print(title)
+        plt.subplot(ceil(len(v_array) / in_row), in_row, i + 1)
+
+        solver = Solver(v={'v': v, 'stop_timing':stop_timing}, h=0.1, tau=0.1)
+        solver.solve()
+        T, t_array = solver.get_results()
+        print(len(T), len(T[0]))
+
+        T_0t = [T_m[0] for T_m in T]
+        plt.xticks(list(range(0, stop_timing, int(stop_timing / 10))))
+        plt.plot(t_array, T_0t, label=title)
+        plt.legend()
+
+        print(f'v={v}, T_0t={T_0t}')
+
+    plt.savefig(f"v.png")
     plt.show()
 
 # Рассмотреть влияние на получаемые результаты амплитуды импульса Fmax и времени maxt
@@ -530,149 +581,27 @@ def test_with_constant_F0_t():
     # этот флаг выставляет константную F0_t(t=1) до 50 итерации по времени (должен выйти на константы)
     # далее считаем, что стержень нагрелся, и F0_t=0 (температура по всей длине должна стать 300
     # прекращаем все итерации на t=100,
-    solver = Solver(use_constant_F0t={"constantF0t_t": 1, 'stop_timing':100, 'stop_hitting': 50})
+    solver = Solver(use_constant_F0t={"constantF0t_t": 1, 'stop_timing':400, 'stop_hitting': 400}, tau=0.5, h=0.01)
     solver.solve()
-    solver.show_results()
-    #solver.print_results()
-
-
-def study4_impuls():
-    print('research impuls')
-    v_array = [1, 10, 20]
-    fig = plt.figure(figsize=(14, 9))
-
-    for i, v in enumerate(v_array):
-        title = f"v={v}"
-        plt.subplot(1, len(v_array), i + 1)
-
-        solver = Solver(v=v, h=1e-2, tau=1e-2)
-        solver.solve()
-        T, t_array = solver.get_results()
-        print(len(T), len(T[0]))
-
-        T_0t = [T_m[0] for T_m in T]
-        plt.xticks(list(range(0, 100, 10)))
-        plt.plot(t_array, T_0t, label=title)
-        plt.legend()
-
-        print(f'v={v}, T_0t={T_0t}')
-
-    plt.savefig(f"v.png")
-    plt.show()
+    solver.show_results(add_str='test_F0t_')
+    solver.print_results(add_str='test_F0t_')
 
 
 
-def notmain():
-    '''
-    deltah = [1, 0.1, 0.01, 0.001]
-    result = []
-    global t
-    for hi in deltah:
-        t = hi
-        res, ti = iter_method()
-        x = [i for i in np.arange(0, l, h)]
-        n = 0
-        print(len(res))
-        for temp in res:
-            if (fabs(n-1) < 0.0001):
-                print()
-                print(t)
-                print()
-                result.append(temp[:-1])
-            n += t
-    print('    1    |   0.1   |   0.01  |  0.001  |')
-    for i in range(len(result[0])):
-        for j in range(len(result)):
-            print(' %3.3f |' % result[j][i], end = '')
-        print()
-    deltah = [1, 0.1, 0.01, 0.001]
-    result = []
-    global h
-    for hi in deltah:
-        h = hi
-        res, ti = iter_method()
-        print(h)
-        i = 0
-        xfix = [temp[int(i / h)] for temp in res]
-        result.append(xfix)
-    print('    1    |   0.1   |   0.01  |  0.001  |')
-    for i in range(len(result[0])):
-        for j in range(len(result)):
-            print(' %3.3f |' % result[j][i], end = '')
-        print()
-    arraya2 = [2.049, 5, 10, 15]
-    arrayb2 = [0.000564, 0.001, 0.01, 0.1]
-    result = []
-    resulti = []
-    global a2, b2
-    for ai, bi in zip(arraya2, arrayb2):
-        a2 = ai
-        b2 = bi
-        print(a2, b2)
-        res, ti = iter_method()
-        te = []
-        i = 0
-        while (i < ti):
-            te.append(i)
-            i += t
-        i = 0
-        xfix = [temp[int(i / h)] for temp in res]
-        print(xfix[:-1])
-        result.append(xfix[:-1])
-        resulti.append(te)
-    for res, teres in zip(result, resulti):
-        plt.plot(teres, res)
-    plt.xlabel("Время, c")
-    plt.ylabel("Температура, K")
-    plt.show()
-    res, ti = iter_method()
-    x = [i for i in np.arange(0, l, h)]
-    n = 0
-    for temp in res:
-        if (n % period == 0):
-            print(n)
-            plt.plot(x, temp[:-1])
-        n += 1
-    plt.xlabel("Длина, см")
-    plt.ylabel("Температура, K")
-    plt.show()
-    te = []
-    i = 0
-    while (i < ti):
-        te.append(i)
-        i += t
-    i = 0
-    xfix = [temp[int(i / h)] for temp in res]
-    plt.plot(te, xfix[:-1])
-    plt.xlabel("Время, c")
-    plt.ylabel("Температура, K")
-    plt.show()'''
-
-
-'''
-    res, ti = iter_method()
-
-    te = []
-    i = 0
-    while (i < ti):
-        te.append(i)
-        i += t
-    i = 0
-    xfix = [temp[int(i / h)] for temp in res]
-    plt.plot(te, xfix[1:])
-    plt.xlabel("Время, c")
-    plt.ylabel("Температура, K")
-    plt.show()
-'''
 
 def main():
-    solver = Solver(tau=1, h=0.1)
-    solver.solve()
-    solver.show_results()
-    #solver.print_results()
-    print(solver.check_steps_ok())
+    # solver = Solver(tau=1, h=0.1)
+    # solver.solve()
+    # solver.show_results()
+    # #solver.print_results()
+    # print(solver.check_steps_ok())
 
-    # study_steps()
+    # SUPER OK
+    # test_with_constant_F0_t()
+
+
+    # OK
+    study2_steps()
 
 
     # OK
@@ -681,10 +610,9 @@ def main():
     # OK
     # study5_Ftmax()
 
-    # SUPER OK
-    # test_with_constant_F0_t()
 
-    # study4_impuls()
+
+    #study4_impuls()
 
 
 
