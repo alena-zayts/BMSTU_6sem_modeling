@@ -6,6 +6,7 @@ import scipy
 import time
 
 DEBUG = False
+DEBUG2 = False
 
 # -------------------------------------------------- Constants
 a1 = 0.0134
@@ -17,7 +18,7 @@ m1 = 1
 c2 = 0.528e5
 m2 = 1
 
-k0 = 1.0
+k0 = 1
 T0 = 300  # температура обдувающего воздуха
 R = 0.5  # радиус стержня
 
@@ -193,6 +194,12 @@ class Solver:
               self.tau * func_plus_half(self.kappa_T, 0, m-1) / self.h +
               self.h * self.tau * func_plus_half(self.alpha_x, 0) / (4 * R))
 
+        p1 = self.h * func_plus_half(self.c_T, 0, m - 1) * (self.T[m - 1][0] + self.T[m - 1][1]) / 8
+        p2 = self.h * self.c_T(0, m - 1) * self.T[m - 1][0] / 4
+        p3 =  self.alpha_x(0) * self.tau * T0
+        p4 = (self.h * self.tau / 4 ) * (2 * T0 * (func_plus_half(self.alpha_x, 0) + self.alpha_x(0)) / R)
+        p5 = (self.h * self.tau / 4 ) * self.F0_t(m - 1) * self.k_T(0, m - 1) * self.exp_Tx(0, m - 1)
+        p6 = (self.h * self.tau / 4 ) * self.F0_t(m - 1) * func_plus_half(self.k_T, 0, m - 1) * func_plus_half(self.exp_Tx, 0, m - 1)
         P0 = (self.h * func_plus_half(self.c_T, 0, m - 1) * (self.T[m - 1][0] + self.T[m - 1][1]) / 8 +
               self.h * self.c_T(0, m - 1) * self.T[m - 1][0] / 4 +
               self.alpha_x(0) * self.tau * T0 +
@@ -248,12 +255,21 @@ class Solver:
 
         # x = self.h
         # n = 1
+        if DEBUG2:
+            print('\n\n\nm=', m)
+            print(boundary_conditions)
         for n in range(1, self.N - 1):
+            if DEBUG2:
+                print(f"n={n}", end=' ')
         #while (x + self.h < l):
             cur_coeffs = self.count_coeffs(n, m)
+            if DEBUG2:
+                print(cur_coeffs, end=' ')
             ksi_array.append(cur_coeffs["D"] / (cur_coeffs["B"] - cur_coeffs["A"] * ksi_array[n - 1]))
             eta_array.append((cur_coeffs["F"] + cur_coeffs["A"] * eta_array[n - 1]) /
                              (cur_coeffs["B"] - cur_coeffs["A"] * ksi_array[n - 1]))
+            if DEBUG2:
+                print(f"ksi={ksi_array[-1]}, eta={eta_array[-1]}")
             # n += 1
             # x += self.h
 
@@ -329,7 +345,7 @@ class Solver:
             figsize=(8, 4))
 
         # Первая cm - K
-        step_by_time = int(len(self.T) / 10)
+        step_by_time = int(len(self.T) / 10) + 1
         for T_m in self.T[len(self.T) - 1:0:-step_by_time]:
             first_graph.plot(self.x_array, T_m)
         first_graph.set_xlabel("x, cm")
@@ -546,13 +562,115 @@ def study4_impuls():
 
 
 
+def notmain():
+    '''
+    deltah = [1, 0.1, 0.01, 0.001]
+    result = []
+    global t
+    for hi in deltah:
+        t = hi
+        res, ti = iter_method()
+        x = [i for i in np.arange(0, l, h)]
+        n = 0
+        print(len(res))
+        for temp in res:
+            if (fabs(n-1) < 0.0001):
+                print()
+                print(t)
+                print()
+                result.append(temp[:-1])
+            n += t
+    print('    1    |   0.1   |   0.01  |  0.001  |')
+    for i in range(len(result[0])):
+        for j in range(len(result)):
+            print(' %3.3f |' % result[j][i], end = '')
+        print()
+    deltah = [1, 0.1, 0.01, 0.001]
+    result = []
+    global h
+    for hi in deltah:
+        h = hi
+        res, ti = iter_method()
+        print(h)
+        i = 0
+        xfix = [temp[int(i / h)] for temp in res]
+        result.append(xfix)
+    print('    1    |   0.1   |   0.01  |  0.001  |')
+    for i in range(len(result[0])):
+        for j in range(len(result)):
+            print(' %3.3f |' % result[j][i], end = '')
+        print()
+    arraya2 = [2.049, 5, 10, 15]
+    arrayb2 = [0.000564, 0.001, 0.01, 0.1]
+    result = []
+    resulti = []
+    global a2, b2
+    for ai, bi in zip(arraya2, arrayb2):
+        a2 = ai
+        b2 = bi
+        print(a2, b2)
+        res, ti = iter_method()
+        te = []
+        i = 0
+        while (i < ti):
+            te.append(i)
+            i += t
+        i = 0
+        xfix = [temp[int(i / h)] for temp in res]
+        print(xfix[:-1])
+        result.append(xfix[:-1])
+        resulti.append(te)
+    for res, teres in zip(result, resulti):
+        plt.plot(teres, res)
+    plt.xlabel("Время, c")
+    plt.ylabel("Температура, K")
+    plt.show()
+    res, ti = iter_method()
+    x = [i for i in np.arange(0, l, h)]
+    n = 0
+    for temp in res:
+        if (n % period == 0):
+            print(n)
+            plt.plot(x, temp[:-1])
+        n += 1
+    plt.xlabel("Длина, см")
+    plt.ylabel("Температура, K")
+    plt.show()
+    te = []
+    i = 0
+    while (i < ti):
+        te.append(i)
+        i += t
+    i = 0
+    xfix = [temp[int(i / h)] for temp in res]
+    plt.plot(te, xfix[:-1])
+    plt.xlabel("Время, c")
+    plt.ylabel("Температура, K")
+    plt.show()'''
+
+
+'''
+    res, ti = iter_method()
+
+    te = []
+    i = 0
+    while (i < ti):
+        te.append(i)
+        i += t
+    i = 0
+    xfix = [temp[int(i / h)] for temp in res]
+    plt.plot(te, xfix[1:])
+    plt.xlabel("Время, c")
+    plt.ylabel("Температура, K")
+    plt.show()
+'''
 
 def main():
-    # solver = Solver()
-    # solver.solve()
-    # solver.show_results()
-    # #solver.print_results()
-    # print(solver.check_steps_ok())
+    solver = Solver(tau=1, h=0.1)
+    solver.solve()
+    solver.show_results()
+    #solver.print_results()
+    print(solver.check_steps_ok())
 
     # study_steps()
 
@@ -566,7 +684,7 @@ def main():
     # SUPER OK
     # test_with_constant_F0_t()
 
-    study4_impuls()
+    # study4_impuls()
 
 
 
