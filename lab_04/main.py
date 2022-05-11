@@ -453,8 +453,8 @@ def study2_steps():
 def study3_ab():
     print('research ab')
     # 2 значения -- по условию
-    a2_array = [1, 2.049, 3, 5]
-    b2_array = [0.1e-3, 0.563e-3, 0.6e-2]
+    a2_array = [1, 2.049, 5]
+    b2_array = [0.563e-3, 0.6e-2]
     fig = plt.figure(figsize=(14, 9))
 
     for i, a2 in enumerate(a2_array):
@@ -467,11 +467,12 @@ def study3_ab():
             T, t_array = solver.get_results()
 
             T_0t = [T_m[0] for T_m in T]
-            plt.xticks(t_array[::len(t_array) / 10])
+            plt.xticks(t_array[::len(t_array) // 10])
             plt.plot(t_array, T_0t, label=title)
+            plt.grid()
             plt.legend()
 
-            print(f'a2={a2}, b2={b2}, T_0t={T_0t}')
+            print(f'a2={a2}, b2={b2}')
 
     plt.savefig(f"a2b2.png")
     plt.show()
@@ -482,7 +483,6 @@ def study4_impuls():
     in_row = 3
     stop_timing = 600
     print('research impuls')
-    v_array = [5, 3, 1, 0.1, 0.01]
     v_array = [0.01, 0.05, 0.1, 1, 3, 5] # больше низя
     fig = plt.figure(figsize=(14, 9))
 
@@ -491,17 +491,15 @@ def study4_impuls():
         print(title)
         plt.subplot(ceil(len(v_array) / in_row), in_row, i + 1)
 
-        solver = Solver(v={'v': v, 'stop_timing':stop_timing}, h=0.1, tau=0.1)
+        solver = Solver(v={'v': v, 'stop_timing': stop_timing}, h=0.1, tau=0.1)
         solver.solve()
         T, t_array = solver.get_results()
-        print(len(T), len(T[0]))
+        print(len(T))
 
         T_0t = [T_m[0] for T_m in T]
         plt.xticks(list(range(0, stop_timing, int(stop_timing / 10))))
         plt.plot(t_array, T_0t, label=title)
         plt.legend()
-
-        print(f'v={v}, T_0t={T_0t}')
 
     plt.savefig(f"v.png")
     plt.show()
@@ -600,19 +598,18 @@ def main():
     # test_with_constant_F0_t()
 
 
-    # OK
-    study2_steps()
+    # OK do
+    # study2_steps()
 
 
     # OK
-    #study3_ab()
+    # study3_ab()
+
+
+    # study4_impuls()
 
     # OK
-    # study5_Ftmax()
-
-
-
-    #study4_impuls()
+    study5_Ftmax()
 
 
 
