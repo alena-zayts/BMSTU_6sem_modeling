@@ -579,7 +579,7 @@ def test_with_constant_F0_t():
     # этот флаг выставляет константную F0_t(t=1) до 50 итерации по времени (должен выйти на константы)
     # далее считаем, что стержень нагрелся, и F0_t=0 (температура по всей длине должна стать 300
     # прекращаем все итерации на t=100,
-    solver = Solver(use_constant_F0t={"constantF0t_t": 1, 'stop_timing':400, 'stop_hitting': 400}, tau=0.5, h=0.01)
+    solver = Solver(use_constant_F0t={"constantF0t_t": 1, 'stop_timing':600, 'stop_hitting': 400}, tau=0.5, h=0.01)
     solver.solve()
     solver.show_results(add_str='test_F0t_')
     solver.print_results(add_str='test_F0t_')
@@ -588,11 +588,11 @@ def test_with_constant_F0_t():
 
 
 def main():
-    # solver = Solver(tau=1, h=0.1)
-    # solver.solve()
-    # solver.show_results()
-    # #solver.print_results()
-    # print(solver.check_steps_ok())
+    solver = Solver(tau=0.5, h=0.01, Fmax=200)
+    solver.solve()
+    solver.show_results()
+    solver.print_results()
+    print(solver.check_steps_ok())
 
     # SUPER OK
     # test_with_constant_F0_t()
