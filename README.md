@@ -1,37 +1,27 @@
 # BMSTU_6sem_modeling
+
 6th sem BMSTU, Modeling
 
+(более подробные задания находятся в соответствующих папках)
 
-https://github.com/Winterpuma/bmstu_MG/tree/master
-(5, теория, лекции, экз) -- python
+## 1. Решение задачи Коши для ОДУ методами приближенно-аналитическими (Пикара) и явными методами первого порядка точности (Эйлера) и второго порядка точности (Рунге-Кутта).
 
-https://github.com/NastyRu/Modeling/tree/master/semestr1
-(5)
+![](tasks_imgs/1.png)
 
+## 2. Метод Рунге-Кутта 4-го порядка точности при решении системы ОДУ
 
-https://github.com/Justarone/bmstu-modeling
-(1-3)
+![](tasks_imgs/21.png)
 
-https://github.com/qwertyKira00/sem6/tree/master/modeling
-(4 + лекции) -cpp
+![](tasks_imgs/22.png)
 
-https://github.com/TheSawIsTheLaw/Modeling
-(1, 2, 4)
+## 3. Решение краевой задачи методом конечных разностей.
 
-https://github.com/wcdbmv/M
-(5+ еще что-то) -cpp
+![](tasks_imgs/3.png)
 
-https://github.com/hackfeed/modeling-6th-sem-labs
-(4)
+## 4. Решение дифференциальных уравнений в частных производных с краевыми условиями III рода (краевая задача)
 
-https://github.com/bmstu-ics7/modeling
-(5) -- старался
+![](tasks_imgs/41.png)
 
-https://github.com/Sunshine-ki/BMSTU6_Modeling
-(4, лекции) -- python
+![](tasks_imgs/42.png)
 
-https://github.com/ZeynalovZ/modeling
-(4)
-
-https://github.com/Dimama/labs_6_sem
-(2,3,4)
+![](tasks_imgs/43.png)
